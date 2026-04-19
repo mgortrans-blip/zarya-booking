@@ -2354,4 +2354,23 @@ if(document.readyState==='loading'){
 }
 
 })();
+
+/* ── АВТОРЕСАЙЗ ДЛЯ IFRAME ── */
+(function(){
+  function sendHeight(){
+    var h = document.documentElement.scrollHeight || document.body.scrollHeight;
+    window.parent.postMessage({type:'zarya-resize', height:h}, '*');
+  }
+  // При загрузке
+  sendHeight();
+  // При изменении размера окна
+  window.addEventListener('resize', sendHeight);
+  // MutationObserver — отлавливает открытие модала, таймер, шаги
+  var obs = new MutationObserver(function(){ setTimeout(sendHeight, 80); });
+  obs.observe(document.body, {childList:true, subtree:true, attributes:true,
+    attributeFilter:['class','style']});
+  // Экспорт для внешнего вызова
+  window.zrSendHeight = sendHeight;
+})();
+
 </script>
