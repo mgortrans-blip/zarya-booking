@@ -2366,7 +2366,7 @@ if(document.readyState==='loading'){
   // При изменении размера окна
   window.addEventListener('resize', sendHeight);
   // MutationObserver — отлавливает открытие модала, таймер, шаги
-  var obs = new MutationObserver(function(){ setTimeout(sendHeight, 80); });
+  var obs = new MutationObserver(function(){ setTimeout(sendHeight, 400); });
   obs.observe(document.body, {childList:true, subtree:true, attributes:true,
     attributeFilter:['class','style']});
   // Экспорт для внешнего вызова
