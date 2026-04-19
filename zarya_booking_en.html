@@ -1,0 +1,2355 @@
+<!-- СИСТЕМА БРОНИРОВАНИЯ "ЗАРЯ" v4 -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* Тильда-защита: сброс для нашего контейнера */
+#zr *, #zr *::before, #zr *::after { box-sizing: border-box !important; }
+#zr { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important; font-size: 14px !important; color: #1a1a1a !important; line-height: 1.5 !important; }
+
+/* ── SEARCH BAR — усиленная специфичность против Тильды ── */
+#zr #zr-bar { background: #ffffff !important; border-bottom: 1px solid #e5e5e5 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important; position: relative !important; z-index: 200 !important; margin: 0 !important; padding: 0 !important; }
+#zr .zr-bar-inner { max-width: 1200px !important; margin: 0 auto !important; padding: 0 24px !important; height: 80px !important; display: flex !important; align-items: center !important; gap: 16px !important; flex-wrap: nowrap !important; }
+#zr .zr-brand { flex-shrink: 0 !important; padding-right: 24px !important; border-right: 1px solid #e5e5e5 !important; margin: 0 !important; }
+#zr .zr-brand-name { font-size: 15px !important; font-weight: 700 !important; color: #1a2f5e !important; margin: 0 !important; padding: 0 !important; line-height: 1.3 !important; }
+#zr .zr-brand-city { font-size: 12px !important; color: #999 !important; margin-top: 2px !important; padding: 0 !important; line-height: 1.3 !important; }
+#zr .zr-fields { display: flex !important; align-items: stretch !important; flex: 1 !important; height: 52px !important; border: 1.5px solid #e5e5e5 !important; border-radius: 10px !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+#zr .zr-field { flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; padding: 0 36px 0 18px !important; cursor: pointer !important; background: #ffffff !important; border: none !important; border-right: 1px solid #e5e5e5 !important; text-align: left !important; transition: background 0.15s !important; position: relative !important; min-width: 0 !important; height: 100% !important; user-select: none !important; }
+#zr .zr-field:last-child { border-right: none !important; }
+#zr .zr-field:hover { background: #fafafa !important; }
+#zr .zr-field.zr-active { background: #fff8f5 !important; box-shadow: inset 0 0 0 2px #e85d26 !important; outline: none !important; }
+#zr .zr-field-lbl { font-size: 10px !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: 0.06em !important; color: #bbbbbb !important; margin-bottom: 3px !important; margin-top: 0 !important; padding: 0 !important; line-height: 1.2 !important; display: block !important; }
+#zr .zr-field-val { font-size: 14px !important; font-weight: 500 !important; color: #bbbbbb !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; margin: 0 !important; padding: 0 !important; display: block !important; line-height: 1.3 !important; }
+#zr .zr-field-val.zr-set { color: #1a1a1a !important; }
+#zr .zr-x { position: absolute !important; right: 10px !important; top: 50% !important; transform: translateY(-50%) !important; width: 18px !important; height: 18px !important; border-radius: 50% !important; background: #eeeeee !important; border: none !important; cursor: pointer !important; font-size: 11px !important; color: #666666 !important; display: none !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; padding: 0 !important; margin: 0 !important; }
+#zr .zr-x.zr-show { display: flex !important; }
+#zr .zr-go { flex-shrink: 0 !important; background: #e85d26 !important; color: #ffffff !important; border: none !important; border-radius: 10px !important; padding: 0 28px !important; height: 52px !important; font-family: 'Inter', sans-serif !important; font-size: 15px !important; font-weight: 700 !important; cursor: pointer !important; transition: background 0.2s !important; white-space: nowrap !important; margin: 0 !important; line-height: 1 !important; appearance: none !important; -webkit-appearance: none !important; display: flex !important; align-items: center !important; }
+#zr .zr-go:hover { background: #c94d1e !important; }
+
+/* ── PICKER ── */
+#zr .zr-picker { display: none; position: absolute; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); background: #ffffff !important; border-radius: 16px !important; box-shadow: 0 12px 48px rgba(0,0,0,0.18) !important; padding: 24px !important; z-index: 300 !important; min-width: 680px; }
+#zr .zr-picker.zr-open { display: block !important; }
+#zr .zr-picker-nav { display: flex !important; align-items: center !important; justify-content: space-between !important; margin-bottom: 16px !important; }
+#zr .zr-picker-months { display: flex !important; flex: 1 !important; justify-content: space-around !important; font-size: 15px !important; font-weight: 700 !important; color: #1a1a1a !important; }
+#zr .zr-pnav { width: 34px !important; height: 34px !important; border-radius: 50% !important; border: 1px solid #e5e5e5 !important; background: #fff !important; cursor: pointer !important; font-size: 18px !important; color: #333 !important; display: flex !important; align-items: center !important; justify-content: center !important; transition: background 0.15s !important; flex-shrink: 0 !important; appearance: none !important; -webkit-appearance: none !important; }
+#zr .zr-pnav:hover { background: #f5f5f5 !important; }
+#zr .zr-cals { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 28px !important; }
+#zr .zr-cal table { width: 100% !important; border-collapse: collapse !important; }
+#zr .zr-cal th { font-size: 11px !important; font-weight: 600 !important; color: #aaa !important; text-align: center !important; padding: 6px 2px !important; text-transform: uppercase !important; letter-spacing: 0.04em !important; }
+#zr .zr-cal td { padding: 1px !important; }
+#zr .zr-day { width: 100% !important; aspect-ratio: 1; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; border-radius: 7px !important; cursor: pointer !important; border: none !important; background: none !important; gap: 1px !important; padding: 2px !important; position: relative !important; transition: background 0.12s !important; appearance: none !important; -webkit-appearance: none !important; box-shadow: none !important; margin: 0 !important; }
+#zr .zr-dn { font-size: 13px !important; font-weight: 600 !important; color: #1a1a1a !important; line-height: 1 !important; display: block !important; }
+#zr .zr-dp { font-size: 9px !important; color: #bbb !important; line-height: 1 !important; display: block !important; }
+/* Прошедшие: серые, без перечёркивания */
+#zr .zr-day.zr-empty { cursor:default !important; pointer-events:none !important; }
+#zr .zr-day.zr-empty .zr-dn { color:#e0e0e0 !important; }
+#zr .zr-day.zr-past { cursor:default !important; pointer-events:none !important; }
+#zr .zr-day.zr-past .zr-dn { color:#c8c8c8 !important; font-weight:400 !important; text-decoration:none !important; }
+#zr .zr-day.zr-past .zr-dp { display:none !important; }
+/* Занятые: серые + перечёркнутые */
+#zr .zr-day.zr-full { cursor:not-allowed !important; pointer-events:none !important; }
+#zr .zr-day.zr-full .zr-dn { color:#bbb !important; text-decoration:line-through !important; text-decoration-color:#bbb !important; font-weight:400 !important; }
+#zr .zr-day.zr-full .zr-dp { display:none !important; }
+/* Слишком короткий: серые + перечёркнутые */
+#zr .zr-day.zr-too-short { cursor:not-allowed !important; pointer-events:none !important; }
+#zr .zr-day.zr-too-short .zr-dn { color:#ccc !important; text-decoration:line-through !important; text-decoration-color:#ccc !important; font-weight:400 !important; }
+.zr-day.zr-free:hover { background: #f0f0f0; }
+.zr-day.zr-partial:hover { background: #f0f0f0; }
+
+.zr-tip { position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); background: #222; color: #fff; font-size: 11px; font-weight: 500; padding: 4px 8px; border-radius: 5px; white-space: nowrap; pointer-events: none; z-index: 9; }
+.zr-tip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:4px solid transparent; border-top-color:#222; }
+.zr-picker-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.zr-picker-info { font-size: 13px; color: #777; }
+.zr-picker-info strong { color: #1a1a1a; }
+.zr-reset { background: none; border: none; color: #e85d26; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; }
+.zr-reset:hover { text-decoration: underline; }
+
+/* ── GUESTS ── */
+#zr .zr-guests-pop { display: none; position: absolute !important; background: #ffffff !important; border-radius: 14px !important; box-shadow: 0 12px 48px rgba(0,0,0,0.16) !important; padding: 20px 24px !important; min-width: 280px !important; z-index: 400 !important; max-width: calc(100vw - 20px) !important; }
+#zr .zr-guests-pop.zr-open { display: block !important; }
+#zr .zr-grow { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 20px !important; }
+#zr .zr-glbl { font-size: 15px !important; font-weight: 600 !important; color: #1a1a1a !important; margin: 0 !important; padding: 0 !important; }
+#zr .zr-gsub { font-size: 12px !important; color: #999 !important; margin-top: 2px !important; padding: 0 !important; }
+#zr .zr-gctrl { display: flex !important; align-items: center !important; gap: 14px !important; }
+#zr .zr-gb { width: 36px !important; height: 36px !important; border-radius: 50% !important; border: 1.5px solid #e5e5e5 !important; background: #ffffff !important; font-size: 22px !important; color: #e85d26 !important; font-weight: 700 !important; cursor: pointer !important; display: flex !important; align-items: center !important; justify-content: center !important; transition: all 0.15s !important; line-height: 1 !important; appearance: none !important; -webkit-appearance: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; }
+#zr .zr-gb:hover:not(:disabled) { background: #e85d26 !important; color: #fff !important; border-color: #e85d26 !important; }
+#zr .zr-gb:disabled { color: #ccc !important; cursor: not-allowed !important; }
+#zr .zr-gnum { font-size: 18px !important; font-weight: 700 !important; color: #1a1a1a !important; min-width: 22px !important; text-align: center !important; display: inline-block !important; }
+
+/* ── OVERLAY + MODAL ── */
+#zr-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 1000; backdrop-filter: blur(2px); }
+#zr-overlay.zr-open { display: block; }
+#zr-modal { display: none; position: fixed; top: 0; right: 0; width: min(1180px,100vw); height: 100vh; background: #fff; z-index: 1001; flex-direction: column; box-shadow: -8px 0 48px rgba(0,0,0,0.2); font-family: inherit; }
+#zr-modal.zr-open { display: flex; }
+
+/* Modal header */
+.zm-hdr { display: flex; align-items: center; gap: 20px; padding: 14px 28px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.zm-brand-name { font-size: 15px; font-weight: 700; color: #1a2f5e; }
+.zm-brand-city { font-size: 12px; color: #999; margin-top: 1px; }
+.zm-hdr-dates { display: flex; align-items: stretch; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; flex: 1; max-width: 500px; cursor: pointer; }
+.zm-hdf { flex: 1; padding: 8px 14px; display: flex; flex-direction: column; gap: 3px; transition: background 0.15s; }
+.zm-hdf:hover { background: #fafafa; }
+.zm-hdf-l { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; margin-bottom: 2px; }
+.zm-hdf-v { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.zm-hd-sep { width: 1px; background: #e5e5e5; }
+.zm-hd-nights { padding: 8px 14px; font-size: 13px; font-weight: 500; color: #555; display: flex; align-items: center; white-space: nowrap; gap: 4px; }
+.zm-close { margin-left: auto; flex-shrink: 0; background: none; border: 1px solid #e5e5e5; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 500; cursor: pointer; color: #555; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.zm-close:hover { background: #fff0ee; border-color: #e85d26; color: #e85d26; }
+
+/* Progress */
+.zm-prog { display: flex; align-items: center; gap: 8px; padding: 12px 28px; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
+.zm-ps { font-size: 14px; color: #ccc; font-weight: 500; }
+.zm-ps.zm-active { color: #e85d26; font-weight: 700; }
+.zm-ps.zm-done { color: #1a1a1a; }
+.zm-ps-back { cursor: pointer; }
+.zm-ps-back:hover { color: #e85d26; text-decoration: underline; }
+.zm-ps.zm-ps-back { color: #1a1a1a; } /* done steps кликабельны */
+.zm-pa { color: #ddd; font-size: 16px; }
+
+/* Steps */
+.zm-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.zm-step { display: none; flex: 1; overflow-y: auto; }
+.zm-step.zm-on { display: block; }
+
+/* Step 1 rooms */
+.zm-rooms-wrap { padding: 28px; max-width: 760px; }
+.zm-rooms-list { display: flex; flex-direction: column; gap: 16px; }
+.zm-room { display: grid; grid-template-columns: 210px 1fr; border: 1.5px solid #e5e5e5; border-radius: 12px; overflow: hidden; transition: box-shadow 0.2s, border-color 0.2s; }
+.zm-room:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-color: #e85d26; }
+.zm-room-img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 175px; }
+.zm-room-body { padding: 18px 20px; display: flex; flex-direction: column; }
+.zm-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; align-self: flex-start; }
+.zm-badge.zm-last { background: #fde8de; color: #c94d1e; }
+.zm-badge.zm-cnt { background: #f0f0f0; color: #888; }
+.zm-badge.zm-na { background: #f5f5f5; color: #aaa; }
+.zm-rname { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.zm-rdesc { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 12px; }
+.zm-amen { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.zm-atag { font-size: 11px; padding: 3px 9px; background: #f5f5f5; border-radius: 5px; color: #555; }
+.zm-rfooter { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; border-top: 1px solid #f0f0f0; flex-wrap: wrap; }
+.zm-price-block .zm-pn { font-size: 12px; color: #999; margin-bottom: 1px; }
+.zm-price-block .zm-pa2 { font-size: 24px; font-weight: 700; color: #1a1a1a; }
+.zm-price-block .zm-pp { font-size: 11px; color: #999; margin-top: 1px; }
+.zm-price-block .zm-ptotal { font-size: 12px; color: #e85d26; font-weight: 600; margin-top: 5px; padding-top: 5px; border-top: 1px solid #f0f0f0; }
+.zm-qty-wrap { display: flex; align-items: center; gap: 10px; }
+.zm-ql { font-size: 13px; color: #888; }
+.zm-qctrl { display: flex; align-items: center; gap: 8px; }
+.zm-qb { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #e5e5e5; background: #fff; font-size: 20px; color: #e85d26; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; line-height: 1; }
+.zm-qb:hover:not(:disabled) { background: #e85d26; color: #fff; border-color: #e85d26; }
+.zm-qb:disabled { color: #ccc; cursor: not-allowed; }
+.zm-qnum { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; color: #1a1a1a; }
+.zm-sel-btn { background: #e85d26; color: #fff; border: none; border-radius: 8px; padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(232,93,38,0.25); }
+.zm-sel-btn:hover { background: #c94d1e; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,93,38,0.35); }
+
+
+/* ── CAROUSEL ── */
+.zm-room-carousel { position: relative; width: 210px; min-height: 175px; flex-shrink: 0; overflow: hidden; background: #f5f5f5; }
+.zm-carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.35s ease; }
+.zm-carousel-slide { min-width: 100%; height: 100%; }
+.zm-carousel-slide img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 175px; }
+.zm-carr-btn { position: absolute; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.45); border: none; color: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 5; transition: background 0.15s; padding: 0; line-height: 1; }
+.zm-carr-btn:hover { background: rgba(0,0,0,0.7); }
+.zm-carr-prev { left: 6px; }
+.zm-carr-next { right: 6px; }
+.zm-carr-dots { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; }
+.zm-carr-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.5); cursor: pointer; transition: background 0.15s; }
+.zm-carr-dot.zm-on { background: #fff; }
+@media (max-width:768px) {
+  .zm-room-carousel { width: 100%; min-height: 200px; }
+  .zm-carousel-slide img { min-height: 200px; }
+}
+
+/* ── PD CONSENT ── */
+
+/* ── CANCELLATION CARDS ── */
+.zm-cancel-cards { display: flex; gap: 8px; margin-bottom: 10px; }
+.zm-cc { flex: 1; border-radius: 9px; padding: 12px 10px; text-align: center; }
+.zm-cc-icon { font-size: 20px; margin-bottom: 5px; }
+.zm-cc-days { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.zm-cc-status { font-size: 13px; font-weight: 700; }
+.zm-cc-sub { font-size: 11px; margin-top: 3px; opacity: 0.75; }
+.zm-cc-green { background: #e8f5e9; color: #1b5e20; }
+.zm-cc-yellow { background: #fff8e1; color: #7a5800; }
+.zm-cc-red { background: #ffebee; color: #b71c1c; }
+.zm-cancel-link { text-align: center; font-size: 12px; color: #aaa; margin-bottom: 14px; }
+.zm-cancel-link a { color: #e85d26; text-decoration: none; }
+.zm-cancel-link a:hover { text-decoration: underline; }
+@media (max-width: 480px) {
+  .zm-cancel-cards { flex-direction: column; gap: 6px; }
+}
+
+.zm-pd-block { background: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 9px; padding: 14px; margin-bottom: 12px; }
+.zm-pd-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; margin-bottom: 10px; }
+.zm-pd-info { font-size: 12px; color: #888; line-height: 1.6; margin-bottom: 10px; }
+.zm-pd-info strong { color: #555; }
+.zm-agree { display: flex; align-items: flex-start; gap: 9px; padding: 8px 0; font-size: 13px; color: #555; line-height: 1.5; cursor: pointer; }
+.zm-agree input { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: #e85d26; cursor: pointer; }
+.zm-agree a { color: #e85d26; text-decoration: none; }
+.zm-agree a:hover { text-decoration: underline; }
+/* No rooms / alternatives */
+.zm-no-rooms { text-align: center; padding: 28px 28px 12px; }
+.zm-no-icon { font-size: 44px; margin-bottom: 10px; }
+.zm-no-title { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.zm-no-sub { font-size: 14px; color: #999; }
+.zm-alts-title { font-size: 15px; font-weight: 700; color: #1a1a1a; padding: 16px 28px 10px; }
+.zm-alts-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 12px; padding: 0 28px 28px; }
+.zm-alt { border: 1.5px solid #e5e5e5; border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; text-align: center; }
+.zm-alt:hover { border-color: #e85d26; background: #fff8f5; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(232,93,38,0.12); }
+.zm-alt-arr { font-size: 18px; color: #e85d26; margin-bottom: 6px; }
+.zm-alt-type { font-size: 12px; font-weight: 700; color: #1a1a1a; margin-bottom: 5px; }
+.zm-alt-dates { font-size: 12px; color: #555; font-weight: 500; margin-bottom: 3px; }
+.zm-alt-nights { font-size: 11px; color: #aaa; margin-bottom: 7px; }
+.zm-alt-price { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.zm-alt-total { font-size: 11px; color: #aaa; margin-bottom: 10px; }
+.zm-alt-btn { background: #e85d26; color: #fff; border: none; border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+.zm-alt-btn:hover { background: #c94d1e; }
+
+/* Step 2 layout */
+.zm-s2 { display: grid; grid-template-columns: 1fr 380px; height: 100%; }
+.zm-form-col { padding: 28px; overflow-y: auto; border-right: 1px solid #f0f0f0; }
+.zm-sum-col { padding: 20px; background: #fafafa; overflow-y: auto; }
+.zm-sec-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; }
+.zm-ff { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+.zm-ff label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; }
+.zm-ff input, .zm-ff textarea { padding: 11px 13px; border: 1.5px solid #e5e5e5; border-radius: 8px; font-family: inherit; font-size: 14px; color: #1a1a1a; outline: none; transition: border-color 0.2s; background: #fff; }
+.zm-ff input:focus, .zm-ff textarea:focus { border-color: #e85d26; }
+.zm-ff textarea { resize: vertical; min-height: 72px; }
+.zm-hr { height: 1px; background: #f0f0f0; margin: 18px 0; }
+/* Services */
+.zm-svc-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.zm-svc { display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1.5px solid #e5e5e5; border-radius: 9px; cursor: pointer; transition: all 0.15s; }
+.zm-svc:hover { border-color: #e85d26; background: #fff8f5; }
+.zm-svc.zm-svc-on { border-color: #e85d26; background: #fff3ee; }
+.zm-svc-chk { width: 19px; height: 19px; border-radius: 4px; border: 2px solid #ddd; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: all 0.15s; margin-top: 1px; }
+.zm-svc.zm-svc-on .zm-svc-chk { background: #e85d26; border-color: #e85d26; color: #fff; }
+.zm-svc-ico { font-size: 20px; flex-shrink: 0; line-height: 1.2; }
+.zm-svc-info { flex: 1; min-width: 0; }
+.zm-svc-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px; }
+.zm-svc-desc { font-size: 11px; color: #aaa; line-height: 1.4; }
+.zm-svc-hint { font-size: 11px; color: #e85d26; font-weight: 500; margin-top: 3px; }
+.zm-svc-qrow { display: none; align-items: center; gap: 7px; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+.zm-svc.zm-svc-on .zm-svc-qrow { display: flex; }
+.zm-svc-ql { font-size: 11px; color: #888; }
+.zm-sqb { width: 24px; height: 24px; border-radius: 50%; border: 1px solid #e5e5e5; background: #fff; font-size: 16px; color: #e85d26; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; transition: all 0.15s; }
+.zm-sqb:hover { background: #e85d26; color: #fff; border-color: #e85d26; }
+.zm-sqn { font-size: 13px; font-weight: 700; min-width: 18px; text-align: center; color: #1a1a1a; }
+.zm-sqt { font-size: 11px; font-weight: 600; color: #e85d26; margin-left: 3px; }
+.zm-svc-pc { text-align: right; flex-shrink: 0; }
+.zm-svc-pr { font-size: 14px; font-weight: 700; color: #1a1a1a; white-space: nowrap; }
+.zm-svc-un { font-size: 10px; color: #bbb; margin-top: 1px; }
+/* Promo */
+.zm-prow { display: flex; gap: 8px; margin-bottom: 5px; }
+.zm-prow input { flex: 1; text-transform: uppercase; letter-spacing: 0.05em; }
+.zm-papply { background: #f0f0f0; border: 1px solid #e5e5e5; border-radius: 8px; padding: 0 14px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; color: #333; transition: all 0.15s; white-space: nowrap; }
+.zm-papply:hover { background: #e5e5e5; }
+.zm-pmsg { font-size: 13px; min-height: 18px; margin-bottom: 12px; }
+.zm-pmsg.zm-ok { color: #2e7d32; font-weight: 500; }
+.zm-pmsg.zm-err { color: #c62828; }
+/* Policy + rules */
+.zm-policy { background: #f9f9f9; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 12px; }
+.zm-policy strong { color: #333; }
+.zm-rules { border: 1px solid #e5e5e5; border-radius: 9px; overflow: hidden; margin-bottom: 16px; }
+.zm-rules-hdr { padding: 11px 14px; background: #fafafa; font-size: 14px; font-weight: 600; color: #1a1a1a; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+.zm-rules-arr { font-size: 16px; color: #e85d26; transition: transform 0.2s; }
+.zm-rules-hdr.zm-open .zm-rules-arr { transform: rotate(90deg); }
+.zm-rules-body { display: none; padding: 12px 14px; border-top: 1px solid #f0f0f0; }
+.zm-rules-body.zm-open { display: block; }
+.zm-rules-body ul { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+.zm-rules-body li { font-size: 13px; color: #555; padding-left: 12px; position: relative; }
+.zm-rules-body li::before { content: '•'; position: absolute; left: 0; color: #e85d26; font-weight: 700; }
+.zm-agree { display: flex; align-items: flex-start; gap: 9px; padding: 11px 14px; font-size: 13px; color: #888; line-height: 1.5; cursor: pointer; }
+.zm-agree input { width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; accent-color: #e85d26; cursor: pointer; }
+.zm-errmsg { background: #fff5f5; border: 1px solid #fcc; border-left: 3px solid #c62828; border-radius: 8px; padding: 10px 13px; font-size: 13px; color: #c62828; margin-bottom: 12px; display: none; }
+.zm-submit { width: 100%; background: linear-gradient(135deg, #e85d26 0%, #c94d1e 100%); color: #fff; border: none; border-radius: 9px; padding: 16px; box-shadow: 0 4px 16px rgba(232,93,38,0.3); letter-spacing:0.02em; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+.zm-submit:hover { box-shadow: 0 6px 24px rgba(232,93,38,0.45); transform: translateY(-1px); }
+.zm-submit:disabled { background: #ccc; cursor: not-allowed; }
+/* Summary */
+.zm-sum-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 11px; overflow: hidden; position: sticky; top: 0; }
+.zm-sum-hdr { background: #1a2f5e; color: #fff; padding: 14px 18px; font-size: 14px; font-weight: 700; }
+.zm-sum-body { padding: 0; }
+/* Секции сводки */
+.zm-sum-section { padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
+.zm-sum-section:last-child { border-bottom: none; }
+.zm-sum-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #bbb; margin-bottom: 8px; }
+.zm-sr { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 5px 0; font-size: 13px; }
+.zm-sl { color: #888; flex-shrink: 0; font-size: 13px; }
+.zm-sv { font-weight: 500; color: #1a1a1a; text-align: right; font-size: 13px; }
+/* Итоговая строка */
+.zm-sum-total { padding: 14px 18px; background: #fafafa; }
+.zm-sum-total-row { display: flex; justify-content: space-between; align-items: center; }
+.zm-sum-total-lbl { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.zm-sum-total-val { font-size: 26px; font-weight: 700; color: #1a1a1a; }
+/* Скидка — крупная и заметная */
+.zm-sum-discount { background: #fff3ee; border-radius: 8px; padding: 10px 14px; margin: 10px 18px 12px; display: flex; justify-content: space-between; align-items: center; }
+.zm-sum-discount-lbl { font-size: 13px; font-weight: 600; color: #e85d26; }
+.zm-sum-discount { animation: zmSlideIn 0.3s ease; }
+@keyframes zmSlideIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
+.zm-sum-discount-val { font-size: 18px; font-weight: 700; color: #e85d26; }
+.zm-sum-note { font-size: 11px; color: #bbb; text-align: center; padding: 8px 18px 12px; }
+/* Step 3 success */
+.zm-ok-wrap { display: flex; align-items: center; justify-content: center; min-height: 100%; padding: 40px; }
+.zm-ok { text-align: center; max-width: 420px; }
+.zm-ok-ico { width: 72px; height: 72px; background: #2e7d32; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #fff; margin: 0 auto 22px; }
+.zm-ok-title { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
+.zm-ok-text { font-size: 15px; color: #888; line-height: 1.7; margin-bottom: 7px; }
+.zm-ok-id { display: inline-block; background: #f5f5f5; border-radius: 9px; padding: 10px 20px; margin: 14px 0; font-size: 18px; font-weight: 700; color: #1a2f5e; letter-spacing: 0.05em; }
+.zm-ok-phone { font-size: 14px; color: #888; }
+.zm-ok-phone strong { color: #1a1a1a; }
+/* Loading */
+.zm-load { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px; color: #bbb; font-size: 14px; gap: 14px; }
+.zm-spin { width: 34px; height: 34px; border: 3px solid #f0f0f0; border-top-color: #e85d26; border-radius: 50%; animation: zmSpin 0.8s linear infinite; }
+@keyframes zmSpin { to { transform: rotate(360deg); } }
+
+.zm-next-mob { display:none; } /* скрыт глобально, показывается в mobile media */
+#zms25 { display:none; } /* мобильный шаг, показывается в mobile media */
+
+/* ── ДЕСКТОП: скрываем мобильные элементы ── */
+#zr .zr-bar-row2 { display: none; }
+#zr .zr-fg-mobile { display: none; }
+#zr .zr-go-mob { display: none; }
+#zr .zr-fields-wrap { display: contents; }
+
+@media (max-width:768px) {
+  #zr .zr-brand { display: none !important; }
+  /* ── ПАНЕЛЬ ПОИСКА МОБИЛЕ ── */
+  #zr .zr-brand { display: none !important; }
+  #zr .zr-bar-inner { flex-wrap: wrap !important; height: auto !important; padding: 8px 10px !important; gap: 6px !important; }
+  #zr .zr-fields-wrap { display: flex !important; flex-direction: column !important; flex: 1 1 100% !important; gap: 6px !important; min-width: 0 !important; }
+  /* Строка 1: Заезд + Выезд рядом */
+  #zr .zr-fields { flex-wrap: nowrap !important; height: 46px !important; border-radius: 8px !important; border: 1.5px solid #e5e5e5 !important; overflow: hidden !important; }
+  #zr .zr-field { flex: 1 !important; height: 46px !important; padding: 0 10px !important; }
+  #zr .zr-field:nth-child(3) { display: none !important; }
+  #zr .zr-field-lbl { font-size: 10px !important; }
+  #zr .zr-field-val { font-size: 13px !important; }
+  /* Строка 2: Гости + Показать рядом */
+  #zr .zr-bar-row2 { display: flex !important; gap: 6px !important; align-items: center !important; }
+  #zr .zr-fg-mobile { flex: 1 !important; height: 40px !important; background: #fff !important; border: 1.5px solid #e5e5e5 !important; border-radius: 8px !important; padding: 0 12px !important; display: flex !important; align-items: center !important; cursor: pointer !important; gap: 8px !important; }
+  #zr .zr-fg-mobile-lbl { font-size: 10px !important; color: #999 !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
+  #zr .zr-fg-mobile-val { font-size: 13px !important; font-weight: 500 !important; color: #1a1a1a !important; }
+  #zr .zr-go-desk { display: none !important; }
+  #zr .zr-go-mob { display: flex !important; align-items: center !important; flex: 0 0 auto !important; height: 40px !important; padding: 0 18px !important; border-radius: 8px !important; font-size: 14px !important; white-space: nowrap !important; }
+  #zr .zr-picker { min-width: unset !important; left: 4px !important; right: 4px !important; transform: none !important; width: calc(100vw - 8px) !important; padding: 16px !important; }
+  #zr .zr-cals { grid-template-columns: 1fr !important; gap: 16px !important; }
+  #zr .zr-picker-months { gap: 40px !important; }
+  #zr-modal { width: 100vw !important; }
+  .zm-s2 { grid-template-columns: 1fr !important; }
+  .zm-form-col { border-right: none !important; border-bottom: 1px solid #f0f0f0 !important; }
+  .zm-room { grid-template-columns: 1fr !important; }
+  .zm-room-img { min-height: 160px !important; width: 100% !important; }
+  /* Шапка модала: 2 строки */
+  .zm-hdr { padding: 8px 12px !important; gap: 6px !important; flex-wrap: wrap !important; align-items: center !important; }
+  .zm-brand { flex: 1 !important; min-width: 0 !important; order: 1 !important; }
+  .zm-brand-name { font-size: 13px !important; }
+  .zm-brand-city { font-size: 11px !important; }
+  .zm-close { padding: 5px 8px !important; font-size: 11px !important; flex-shrink: 0 !important; order: 2 !important; }
+  /* Даты — вторая строка на всю ширину */
+  .zm-hdr-dates { order: 3 !important; width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; }
+  .zm-hdf { padding: 7px 10px !important; flex: 1 !important; }
+  .zm-hdf-l { font-size: 9px !important; }
+  .zm-hdf-v { font-size: 14px !important; font-weight: 700 !important; }
+  .zm-hd-sep { display: none !important; }
+  .zm-hd-nights { padding: 7px 10px !important; font-size: 12px !important; white-space: nowrap !important; flex-shrink: 0 !important; }
+  .zm-rooms-wrap { padding: 12px !important; }
+  .zm-step { padding: 12px !important; }
+}
+@media (max-width:480px) {
+  #zr .zr-field { flex: 1 1 100% !important; border-right: none !important; border-bottom: 1px solid #e5e5e5 !important; }
+  #zr .zr-field:last-child { border-bottom: none !important; }
+}
+#zr .zr-day.zr-in-r { background: #fde8de !important; border-radius: 0 !important; }
+#zr .zr-day.zr-in-r:hover { background: #fbd5c5 !important; }
+#zr .zr-day.zr-sel-s { background: #e85d26 !important; border-radius: 7px 0 0 7px !important; }
+#zr .zr-day.zr-sel-e { background: #e85d26 !important; border-radius: 0 7px 7px 0 !important; }
+#zr .zr-day.zr-sel-s.zr-sel-e { border-radius: 7px !important; }
+#zr .zr-day.zr-sel-s .zr-dn, #zr .zr-day.zr-sel-e .zr-dn { color: #fff !important; font-weight: 700 !important; }
+#zr .zr-day.zr-sel-s .zr-dp, #zr .zr-day.zr-sel-e .zr-dp { color: rgba(255,255,255,0.75) !important; }
+.zm-trust-badges { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:12px; }
+.zm-trust-badge { font-size:11px; color:#777; background:#f9f9f9; border:1px solid #eee; border-radius:20px; padding:4px 10px; white-space:nowrap; }
+
+
+/* ── POPUP BOOKING WINDOW ── */
+#zr-popup {
+  display:none; position:fixed; inset:0;
+  background:rgba(15,23,42,0.6);
+  z-index:9000; align-items:center; justify-content:center;
+  padding:16px; backdrop-filter:blur(4px);
+}
+#zr-popup.zr-open { display:flex; }
+
+#zr-popup-box {
+  background:#fff;
+  border-radius:20px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.22);
+  width:100%; max-width:820px;
+  max-height:92vh; overflow-y:auto;
+  animation:zmSlideIn 0.25s cubic-bezier(.34,1.56,.64,1);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+
+
+/* Handle для мобильного bottom-sheet */
+.zr-pb-handle {
+  display:none; width:36px; height:4px; background:#e0e0e0;
+  border-radius:2px; margin:10px auto 0;
+}
+@media(max-width:680px){
+  .zr-pb-handle { display:block !important; }
+}
+
+/* Шапка */
+.zr-pb-hdr {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:22px 28px 0;
+}
+.zr-pb-title { font-size:20px; font-weight:700; color:#1a2f5e; letter-spacing:-0.01em; }
+.zr-pb-sub { font-size:13px; color:#aaa; margin-top:3px; }
+.zr-pb-close {
+  background:#f5f5f7; border:none; border-radius:50%;
+  width:36px; height:36px; font-size:16px; color:#555;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s; flex-shrink:0;
+}
+.zr-pb-close:hover { background:#e85d26; color:#fff; }
+
+/* Поля дат + гости */
+.zr-pb-search-row {
+  display:flex; gap:10px; padding:18px 28px 0; align-items:stretch;
+}
+.zr-pb-field {
+  flex:1; background:#f8f8fa; border:1.5px solid transparent;
+  border-radius:12px; padding:12px 16px; cursor:pointer;
+  transition:all 0.15s; position:relative;
+}
+.zr-pb-field:hover { background:#f0f0f5; }
+.zr-pb-field.zr-pb-active {
+  background:#fff8f5; border-color:#e85d26;
+  box-shadow:0 0 0 3px rgba(232,93,38,0.12);
+}
+.zr-pb-field-lbl {
+  font-size:10px; font-weight:700; text-transform:uppercase;
+  letter-spacing:0.07em; color:#aaa; margin-bottom:4px; display:block;
+}
+.zr-pb-field-val { font-size:15px; font-weight:600; color:#bbb; display:block; }
+.zr-pb-field-val.zr-set { color:#1a1a1a; }
+.zr-pb-field-sep { width:1px; background:#e5e5e5; align-self:center; height:36px; flex-shrink:0; }
+
+/* Гости */
+.zr-pb-guests-wrap {
+  flex-shrink:0; background:#f8f8fa; border:1.5px solid transparent;
+  border-radius:12px; padding:12px 16px; display:flex;
+  align-items:center; gap:12px; min-width:160px;
+}
+.zr-pb-guests-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:#aaa; white-space:nowrap; }
+.zr-pb-gctrl { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.zr-pb-gb {
+  width:28px; height:28px; border-radius:50%;
+  border:1.5px solid #e5e5e5; background:#fff;
+  font-size:16px; color:#e85d26; font-weight:700;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s; line-height:1; padding:0;
+}
+.zr-pb-gb:hover:not(:disabled) { background:#e85d26; color:#fff; border-color:#e85d26; }
+.zr-pb-gb:disabled { color:#ccc; cursor:not-allowed; }
+.zr-pb-gnum { font-size:15px; font-weight:700; color:#1a1a1a; min-width:20px; text-align:center; }
+
+/* Область календаря */
+.zr-pb-cal-area { padding:0 28px; max-height:0; overflow:hidden; transition:max-height 0.3s ease, padding 0.3s ease; }
+.zr-pb-cal-area.zr-pb-cal-open { max-height:700px; padding:16px 28px 0; }
+
+/* Лоадер в попапе */
+.zr-pb-loader {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; padding:40px 20px; gap:16px;
+}
+.zr-pb-spinner {
+  width:36px; height:36px; border:3px solid #f0f0f0;
+  border-top-color:#e85d26; border-radius:50%;
+  animation:zrSpin 0.8s linear infinite;
+}
+.zr-pb-load-msg { font-size:14px; font-weight:500; color:#888; text-align:center; max-width:300px; line-height:1.5; }
+.zr-pb-load-sub { font-size:12px; color:#bbb; text-align:center; margin-top:-8px; }
+
+/* Двойной календарь в попапе */
+.zr-pb-cals { display:grid; grid-template-columns:1fr 1fr; gap:32px; }
+.zr-pb-month { display:flex; flex-direction:column; }
+.zr-pb-cal-nav {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.zr-pb-cal-nav-btn {
+  width:32px; height:32px; border-radius:8px; border:1px solid #e5e5e5;
+  background:#fff; cursor:pointer; font-size:16px; color:#555;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.15s; padding:0;
+}
+.zr-pb-cal-nav-btn:hover { background:#f5f5f5; }
+.zr-pb-cal-nav-title { font-size:15px; font-weight:700; color:#1a1a1a; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:-0.01em; }
+.zr-pb-cal-nav-empty { width:32px; }
+.zr-pb-cal-table { width:100%; border-collapse:collapse; }
+.zr-pb-cal-table th {
+  font-size:10px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.06em; color:#c0c0c0; text-align:center; padding:8px 2px;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.zr-pb-cal-table td { padding:2px; }
+.zr-pb-day {
+  width:100%; aspect-ratio:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; border-radius:8px;
+  cursor:pointer; border:none; background:none; transition:background 0.1s;
+  position:relative; padding:2px; gap:1px;
+}
+.zr-pb-day:not(.zr-pb-past):not(.zr-pb-full):not(.zr-pb-short):hover { background:#f0f0f4; cursor:pointer; }
+.zr-pb-day { cursor:default; }
+.zr-pb-dn { font-size:14px; font-weight:500; color:#1a1a1a; line-height:1; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; }
+.zr-pb-dp { font-size:9px; color:#bbb; line-height:1; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; letter-spacing:0; }
+.zr-pb-day.zr-pb-past { cursor:default; }
+.zr-pb-day.zr-pb-past .zr-pb-dn { color:#d0d0d0; font-weight:400; }
+.zr-pb-day.zr-pb-past .zr-pb-dp { display:none; }
+.zr-pb-day.zr-pb-full { cursor:not-allowed; }
+.zr-pb-day.zr-pb-full .zr-pb-dn { color:#ccc; text-decoration:line-through; }
+.zr-pb-day.zr-pb-full .zr-pb-dp { display:none; }
+.zr-pb-day.zr-pb-short { cursor:not-allowed; }
+.zr-pb-day.zr-pb-short .zr-pb-dn { color:#ccc; text-decoration:line-through; }
+.zr-pb-day.zr-pb-sel-s { background:#e85d26 !important; border-radius:8px 0 0 8px; }
+.zr-pb-day.zr-pb-sel-e { background:#e85d26 !important; border-radius:0 8px 8px 0; }
+.zr-pb-day.zr-pb-sel-s.zr-pb-sel-e { border-radius:8px !important; }
+.zr-pb-day.zr-pb-sel-s .zr-pb-dn, .zr-pb-day.zr-pb-sel-e .zr-pb-dn { color:#fff !important; font-weight:700 !important; }
+.zr-pb-day.zr-pb-sel-s .zr-pb-dp, .zr-pb-day.zr-pb-sel-e .zr-pb-dp { color:rgba(255,255,255,0.75) !important; }
+.zr-pb-day.zr-pb-range { background:#fde8de; border-radius:0; }
+.zr-pb-day.zr-pb-range .zr-pb-dn { color:#c94d1e; }
+
+/* Футер попапа */
+.zr-pb-footer {
+  padding:18px 28px 24px; display:flex; align-items:center;
+  justify-content:space-between; gap:16px; border-top:1px solid #f5f5f5;
+  margin-top:16px;
+}
+.zr-pb-nights { font-size:13px; color:#888; }
+.zr-pb-nights strong { color:#1a1a1a; font-size:15px; }
+.zr-pb-search {
+  background:linear-gradient(135deg, #e85d26 0%, #c94d1e 100%);
+  color:#fff; border:none; border-radius:12px; padding:14px 32px;
+  font-family:'Inter',sans-serif; font-size:15px; font-weight:700;
+  cursor:pointer; transition:all 0.2s; letter-spacing:0.01em;
+  box-shadow:0 4px 16px rgba(232,93,38,0.3); white-space:nowrap;
+}
+.zr-pb-search:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(232,93,38,0.45); }
+.zr-pb-search:active { transform:translateY(0); }
+
+
+@media(max-width:680px){
+  /* Попап — sheet снизу */
+  #zr-popup {
+    align-items:flex-end !important;
+    padding:0 !important;
+  }
+  #zr-popup-box {
+    border-radius:20px 20px 0 0 !important;
+    max-width:100% !important;
+    max-height:88vh !important;
+    width:100% !important;
+    padding-bottom:env(safe-area-inset-bottom,0);
+  }
+
+  /* Шапка компактнее */
+  .zr-pb-hdr { padding:16px 20px 0 !important; }
+  .zr-pb-title { font-size:18px !important; }
+  .zr-pb-sub { font-size:12px !important; }
+  .zr-pb-close { width:32px !important; height:32px !important; font-size:14px !important; }
+
+  /* Поля — В ОДНУ СТРОКУ с меньшими отступами */
+  .zr-pb-search-row {
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    padding:12px 16px 0 !important;
+    gap:6px !important;
+    align-items:stretch !important;
+  }
+  .zr-pb-field { padding:10px 12px !important; border-radius:10px !important; flex:1 !important; min-width:0 !important; }
+  .zr-pb-field-lbl { font-size:9px !important; margin-bottom:2px !important; }
+  .zr-pb-field-val { font-size:13px !important; }
+  .zr-pb-field-sep { display:none !important; }
+
+  /* Гости — компактно */
+  .zr-pb-guests-wrap {
+    padding:10px 12px !important;
+    border-radius:10px !important;
+    min-width:0 !important;
+    flex-shrink:0 !important;
+    gap:8px !important;
+  }
+  .zr-pb-guests-lbl { font-size:9px !important; }
+  .zr-pb-gnum { font-size:14px !important; }
+  .zr-pb-gb { width:24px !important; height:24px !important; font-size:14px !important; }
+
+  /* Один месяц */
+  .zr-pb-cals { grid-template-columns:1fr !important; gap:0 !important; }
+  .zr-pb-cal-area { padding:10px 16px 0 !important; }
+  .zr-pb-cal-area.zr-pb-cal-open { padding:12px 16px 0 !important; max-height:500px !important; }
+
+  /* Ячейки дней компактнее */
+  .zr-pb-cal-nav { margin-bottom:8px !important; }
+  .zr-pb-cal-nav-title { font-size:14px !important; }
+  .zr-pb-cal-table th { padding:6px 1px !important; font-size:9px !important; }
+  .zr-pb-cal-table td { padding:1px !important; }
+  .zr-pb-dn { font-size:13px !important; }
+  .zr-pb-dp { font-size:8px !important; }
+
+  /* Футер */
+  .zr-pb-footer {
+    padding:12px 16px 16px !important;
+    flex-direction:row !important;
+    gap:12px !important;
+  }
+  .zr-pb-search {
+    padding:12px 20px !important;
+    font-size:14px !important;
+    flex:1 !important;
+    text-align:center !important;
+  }
+  .zr-pb-nights { font-size:12px !important; flex-shrink:0; }
+
+  /* Мобиль — шаг 2: скрываем правую колонку сводки */
+  .zm-s2 { grid-template-columns:1fr !important; height:auto !important; }
+  .zm-sum-col { display:none !important; }
+  /* Шаг 2 мобиль: прячем десктопный submit и summary */
+  .zm-form-col .zm-submit { display:none !important; }
+  .zm-sum-col { display:none !important; }
+  /* Большая кнопка Далее */
+  .zm-next-mob {
+    display:flex !important; width:100%; align-items:center;
+    justify-content:center; gap:8px;
+    background:linear-gradient(135deg,#e85d26 0%,#c94d1e 100%);
+    color:#fff; border:none; border-radius:12px; padding:16px;
+    font-family:inherit; font-size:16px; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 16px rgba(232,93,38,0.3);
+    margin-top:12px; letter-spacing:0.01em;
+  }
+  /* Шаг 2.5 — показываем, десктоп прячет */
+  #zms25 { display:none !important; }
+  #zms25.zm-on { display:flex !important; flex-direction:column; flex:1; overflow:hidden; }
+  /* Прогресс-бар */
+  .zm-prog { padding:8px 16px !important; gap:6px !important; }
+  .zm-ps { font-size:12px !important; }
+  .zm-pa { font-size:13px !important; }
+}
+
+/* ── LOADER КАЛЕНДАРЯ ── */
+#zr .zr-cal-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 20px;
+  min-height: 220px;
+}
+#zr .zr-cal-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #e85d26;
+  border-radius: 50%;
+  animation: zrSpin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes zrSpin { to { transform: rotate(360deg); } }
+#zr .zr-cal-msg {
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  text-align: center;
+  max-width: 280px;
+  line-height: 1.5;
+  animation: zrMsgFade 0.5s ease;
+}
+#zr .zr-cal-msg-sub {
+  font-size: 12px;
+  color: #bbb;
+  text-align: center;
+  margin-top: -10px;
+}
+@keyframes zrMsgFade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── ACCORDION CANCELLATION POLICY ── */
+.zm-policy-acc { border:1px solid #e5e5e5; border-radius:9px; overflow:hidden; margin-bottom:14px; }
+.zm-policy-acc-hdr { display:flex !important; align-items:center !important; justify-content:space-between !important; padding:11px 14px !important; background:#fafafa !important; cursor:pointer; user-select:none; gap:8px; }
+.zm-policy-acc-label { font-size:13px; color:#888; flex:1; line-height:1.4; }
+.zm-policy-acc-label strong { color:#333; }
+.zm-policy-acc-arr { font-size:16px; color:#e85d26; transition:transform 0.2s; flex-shrink:0; }
+.zm-policy-acc.zm-open .zm-policy-acc-arr { transform:rotate(90deg); }
+.zm-policy-acc-body { display:none; flex-direction:column; gap:8px; padding:12px; border-top:1px solid #f0f0f0; background:#fff; }
+.zm-policy-acc.zm-open .zm-policy-acc-body { display:flex !important; }
+
+
+
+/* ══ ШАГ ПОДТВЕРЖДЕНИЯ (мобиль) ══ */
+.zm-confirm-wrap {
+  display:flex; flex-direction:column;
+  height:100%; overflow:hidden;  /* внешний контейнер не скроллится */
+}
+.zm-confirm-scroll {
+  flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  padding:16px 20px 0;
+}
+.zm-confirm-title { display:none; } /* убираем дублирующий заголовок */
+.zm-confirm-sum { margin-bottom:12px; }
+.zm-confirm-footer {
+  flex-shrink:0; /* прилипает к низу */
+  background:#fff;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top:1px solid #f0f0f0;
+  display:flex; flex-direction:column; gap:10px;
+}
+.zm-confirm-submit {
+  width:100%;
+  background:linear-gradient(135deg,#e85d26 0%,#c94d1e 100%);
+  color:#fff; border:none; border-radius:12px; padding:16px;
+  font-family:inherit; font-size:16px; font-weight:700; cursor:pointer;
+  box-shadow:0 4px 16px rgba(232,93,38,0.3); letter-spacing:0.01em;
+  transition:all 0.2s;
+}
+.zm-confirm-submit:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(232,93,38,0.45); }
+.zm-confirm-submit:disabled { background:#ccc; box-shadow:none; transform:none; cursor:not-allowed; }
+.zm-confirm-back-btn {
+  width:100%; background:#f5f5f7; color:#555; border:none;
+  border-radius:12px; padding:14px; font-family:inherit;
+  font-size:14px; font-weight:600; cursor:pointer; transition:all 0.15s;
+}
+.zm-confirm-back-btn:hover { background:#ececec; }
+
+
+/* ── ЦВЕТОВОЕ КОДИРОВАНИЕ ЦЕН В ПОПАП-КАЛЕНДАРЕ ── */
+.zr-pb-day.zr-pb-price-low .zr-pb-dp  { color:#2e7d32 !important; font-weight:700; }
+.zr-pb-day.zr-pb-price-mid .zr-pb-dp  { color:#f57c00 !important; font-weight:700; }
+.zr-pb-day.zr-pb-price-high .zr-pb-dp { color:#c62828 !important; font-weight:700; }
+/* Бейдж «Лучшая цена» в ячейке */
+.zr-pb-day.zr-pb-best .zr-pb-dn::after {
+  content:'✦'; font-size:6px; color:#2e7d32;
+  vertical-align:super; margin-left:1px;
+}
+/* Бейдж «Мало мест» */
+.zr-pb-last-badge {
+  display:block; font-size:7px; font-weight:700;
+  color:#e65100; line-height:1; margin-top:1px;
+  font-family:'Inter',sans-serif;
+}
+
+/* ── ТАЙМЕР СРОЧНОСТИ ── */
+#zm-timer-bar {
+  display:none;
+  background:linear-gradient(135deg,#1a2f5e 0%,#243b6e 100%);
+  color:#fff; padding:10px 24px;
+  align-items:center; justify-content:space-between;
+  gap:12px; border-bottom:1px solid rgba(255,255,255,0.1);
+  animation:zmSlideIn 0.3s ease;
+}
+#zm-timer-bar.zm-timer-on { display:flex; }
+.zm-timer-left { display:flex; align-items:center; gap:10px; }
+.zm-timer-icon { font-size:18px; flex-shrink:0; animation:zmTimerPulse 2s ease infinite; }
+@keyframes zmTimerPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.zm-timer-text { font-size:13px; color:rgba(255,255,255,0.8); line-height:1.3; }
+.zm-timer-text strong { color:#fff; font-size:14px; display:block; }
+.zm-timer-display {
+  background:rgba(255,255,255,0.15); border-radius:8px;
+  padding:6px 14px; text-align:center; flex-shrink:0;
+}
+.zm-timer-mm { font-size:22px; font-weight:700; color:#fff; line-height:1; font-variant-numeric:tabular-nums; }
+.zm-timer-ss { font-size:11px; color:rgba(255,255,255,0.6); margin-top:1px; }
+.zm-timer-display.zm-timer-urgent { background:rgba(232,93,38,0.4); }
+.zm-timer-display.zm-timer-urgent .zm-timer-mm { color:#ffccaa; }
+
+/* Таймер мобиль — компактнее */
+@media(max-width:768px){
+  #zm-timer-bar { padding:8px 16px; flex-wrap:nowrap; }
+  .zm-timer-text strong { font-size:13px; }
+  .zm-timer-text { font-size:11px; }
+  .zm-timer-mm { font-size:18px; }
+}
+
+/* ── БЕЙДЖ «ЛУЧШАЯ ЦЕНА» В СВОДКЕ ── */
+.zm-best-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  background:linear-gradient(135deg,#e8f5e9,#c8e6c9);
+  color:#1b5e20; border:1px solid #a5d6a7;
+  border-radius:6px; padding:4px 9px;
+  font-size:11px; font-weight:700; margin-top:6px;
+  animation:zmSlideIn 0.3s ease;
+}
+.zm-best-badge-icon { font-size:13px; }
+
+
+.zr-pb-dp-low  { color:#2e7d32 !important; font-weight:700; }
+.zr-pb-dp-mid  { color:#f57c00 !important; font-weight:700; }
+.zr-pb-dp-high { color:#c62828 !important; font-weight:700; }
+
+</style>
+
+<!-- POPUP BOOKING WINDOW — открывается по window.zrOpenSearch() -->
+<div id="zr-popup">
+  <div id="zr-popup-box">
+    <!-- Handle для мобильного sheet -->
+    <div class="zr-pb-handle"></div>
+    <!-- Шапка -->
+    <div class="zr-pb-hdr">
+      <div>
+        <div class="zr-pb-title">Book a room</div>
+        <div class="zr-pb-sub">Zarya Guesthouse · Sortavala, Karelia</div>
+      </div>
+      <button class="zr-pb-close" id="zr-pb-close">✕</button>
+    </div>
+    <!-- Поля поиска -->
+    <div class="zr-pb-search-row">
+      <div class="zr-pb-field" id="zr-pb-fci">
+        <span class="zr-pb-field-lbl">Check-in</span>
+        <span class="zr-pb-field-val" id="zr-pb-ci-val">Select date</span>
+      </div>
+      <div class="zr-pb-field-sep"></div>
+      <div class="zr-pb-field" id="zr-pb-fco">
+        <span class="zr-pb-field-lbl">Check-out</span>
+        <span class="zr-pb-field-val" id="zr-pb-co-val">Select date</span>
+      </div>
+      <div class="zr-pb-guests-wrap">
+        <span class="zr-pb-guests-lbl">Guests</span>
+        <div class="zr-pb-gctrl">
+          <button class="zr-pb-gb" id="zr-pb-gm" disabled>&#8722;</button>
+          <span class="zr-pb-gnum" id="zr-pb-gnum">2</span>
+          <button class="zr-pb-gb" id="zr-pb-gp">&#43;</button>
+        </div>
+      </div>
+    </div>
+    <!-- Область календаря -->
+    <div class="zr-pb-cal-area" id="zr-pb-cal"></div>
+
+    <!-- Футер -->
+    <div class="zr-pb-footer">
+      <div class="zr-pb-nights" id="zr-pb-nights">Select dates</div>
+      <button class="zr-pb-search" id="zr-pb-search">Search rooms →</button>
+    </div>
+  </div>
+</div>
+
+<div id="zr">
+  <!-- SEARCH BAR -->
+  <div id="zr-bar">
+    <div class="zr-bar-inner">
+      <div class="zr-brand">
+        <div class="zr-brand-name">Room Booking</div>
+        <div class="zr-brand-city">Zarya Guesthouse</div>
+      </div>
+      <div class="zr-fields-wrap">
+        <div class="zr-fields">
+          <div class="zr-field" id="zr-fci">
+            <div class="zr-field-lbl">Check-in</div>
+            <div class="zr-field-val" id="zr-ci-val">Select</div>
+            <button class="zr-x" id="zr-ci-x">✕</button>
+          </div>
+          <div class="zr-field" id="zr-fco">
+            <div class="zr-field-lbl">Check-out</div>
+            <div class="zr-field-val" id="zr-co-val">Select</div>
+            <button class="zr-x" id="zr-co-x">✕</button>
+          </div>
+          <div class="zr-field" id="zr-fg">
+            <div class="zr-field-lbl">Guests</div>
+            <div class="zr-field-val zr-set" id="zr-g-val">2 adults</div>
+          </div>
+        </div>
+        <!-- Строка 2 только на мобиле: Гости + кнопка Показать -->
+        <div class="zr-bar-row2">
+          <div class="zr-fg-mobile" id="zr-fg-mobile">
+            <span class="zr-fg-mobile-lbl">Guests</span>
+            <span class="zr-fg-mobile-val" id="zr-g-val2">2 adults</span>
+          </div>
+          <!-- Кнопка Показать для мобиле -->
+          <button class="zr-go zr-go-mob" id="zr-go-mob">Search</button>
+        </div>
+      </div>
+      <!-- Кнопка Показать для десктопа — снаружи wrap -->
+      <button class="zr-go zr-go-desk" id="zr-go-btn">Search</button>
+
+    <div class="zr-guests-pop" id="zr-gpop">
+      <div class="zr-grow">
+        <div><div class="zr-glbl">Adults</div><div class="zr-gsub">18+ years</div></div>
+        <div class="zr-gctrl">
+          <button class="zr-gb" id="zr-gm" disabled>&#8722;</button>
+          <span class="zr-gnum" id="zr-gnum">2</span>
+          <button class="zr-gb" id="zr-gp">&#43;</button>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <div class="zr-picker" id="zr-picker">
+      <div class="zr-picker-nav">
+        <button class="zr-pnav" id="zr-prev">&#8592;</button>
+        <div class="zr-picker-months" id="zr-months"></div>
+        <button class="zr-pnav" id="zr-next">&#8594;</button>
+      </div>
+      <div class="zr-cals" id="zr-cals"></div>
+      <div class="zr-picker-footer">
+        <div class="zr-picker-info" id="zr-pinfo"></div>
+        <button class="zr-reset" id="zr-reset-btn" id="zr-reset">Clear dates</button>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div id="zr-overlay"></div>
+
+  <div id="zr-modal">
+    <div class="zm-hdr">
+      <div>
+        <div class="zm-brand-name">Zarya Guesthouse</div>
+        <div class="zm-brand-city">Sortavala, Karelia, Russia</div>
+      </div>
+      <div class="zm-hdr-dates" id="zm-hdr-dates"></div>
+      <button class="zm-close" id="zm-close-btn">Close ✕</button>
+    </div>
+
+    <!-- Urgency timer -->
+    <div id="zm-timer-bar">
+      <div class="zm-timer-left">
+        <span class="zm-timer-icon">⏱</span>
+        <div class="zm-timer-text">
+          <strong>Room reserved for you</strong>
+          Complete your booking before someone else takes it
+        </div>
+      </div>
+      <div class="zm-timer-display" id="zm-timer-display">
+        <div class="zm-timer-mm" id="zm-timer-mm">15:00</div>
+        <div class="zm-timer-ss">min</div>
+      </div>
+    </div>
+
+    <div class="zm-prog">
+      <span class="zm-ps zm-active" id="zmps1">Rooms</span>
+      <span class="zm-pa">›</span>
+      <span class="zm-ps" id="zmps2">Details</span>
+      <span class="zm-pa">›</span>
+      <span class="zm-ps" id="zmps3" data-mob="Confirm" data-desk="Done">Done</span>
+    </div>
+
+    <div class="zm-body">
+      <div class="zm-step zm-on" id="zms1">
+        <div class="zm-rooms-wrap">
+          <div class="zm-rooms-list" id="zm-rooms"></div>
+        </div>
+      </div>
+
+      <div class="zm-step" id="zms2">
+        <div class="zm-s2">
+          <div class="zm-form-col">
+            <p class="zm-sec-title">Your details</p>
+            <div class="zm-ff"><label>Full name *</label><input type="text" id="zm-name" placeholder="John Smith"></div>
+            <div class="zm-ff"><label>Phone *</label><input type="tel" id="zm-phone" placeholder="+1 000 000-00-00"></div>
+            <div class="zm-ff"><label>Email *</label><input type="email" id="zm-email" placeholder="john@email.com"></div>
+            <div class="zm-ff"><label>Comment</label><textarea id="zm-comment" placeholder="Special requests, arrival time..."></textarea></div>
+            <div class="zm-hr"></div>
+            <p class="zm-sec-title" style="margin-bottom:12px">Additional services</p>
+            <div class="zm-svc-list" id="zm-svcs"></div>
+            <div class="zm-hr"></div>
+            <div class="zm-ff" style="margin-bottom:4px"><label>Promo code</label>
+              <div class="zm-prow">
+                <input type="text" id="zm-promo" placeholder="Enter promo code">
+                <button class="zm-papply" id="zm-papply">Apply</button>
+              </div>
+            </div>
+            <div class="zm-pmsg" id="zm-pmsg"></div>
+            <div class="zm-policy-acc" id="zm-policy-acc">
+              <div class="zm-policy-acc-hdr" id="zm-policy-btn">
+                <span class="zm-policy-acc-label"><strong>Cancellation:</strong> free 3+ days before · 50% fee 1–2 days before · no refund on arrival day</span>
+                <span class="zm-policy-acc-arr">›</span>
+              </div>
+              <div class="zm-policy-acc-body" id="zm-policy-modal">
+                <div class="zm-pm-row zm-pm-green">
+                  <div class="zm-pm-card">
+                    <div class="zm-pm-card-accent"></div>
+                    <div class="zm-pm-card-body">
+                      <div class="zm-pm-badge">3+ days</div>
+                      <div class="zm-pm-title">Full refund — 100%</div>
+                      <div class="zm-pm-desc">Funds returned to your card within 5–10 business days.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zm-pm-row zm-pm-yellow">
+                  <div class="zm-pm-card">
+                    <div class="zm-pm-card-accent"></div>
+                    <div class="zm-pm-card-body">
+                      <div class="zm-pm-badge">1–2 days</div>
+                      <div class="zm-pm-title">50% refund</div>
+                      <div class="zm-pm-desc">Half the amount is retained as compensation.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zm-pm-row zm-pm-red">
+                  <div class="zm-pm-card">
+                    <div class="zm-pm-card-accent"></div>
+                    <div class="zm-pm-card-body">
+                      <div class="zm-pm-badge">Arrival day</div>
+                      <div class="zm-pm-title">No refund</div>
+                      <div class="zm-pm-desc">Prepayment is non-refundable.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zm-pm-row zm-pm-blue">
+                  <div class="zm-pm-card">
+                    <div class="zm-pm-card-accent"></div>
+                    <div class="zm-pm-card-body">
+                      <div class="zm-pm-badge">Force majeure</div>
+                      <div class="zm-pm-title">Full refund or transfer</div>
+                      <div class="zm-pm-desc">By agreement with supporting documentation.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zm-pm-row zm-pm-grey">
+                  <div class="zm-pm-card">
+                    <div class="zm-pm-card-accent"></div>
+                    <div class="zm-pm-card-body">
+                      <div class="zm-pm-badge">Early check-out</div>
+                      <div class="zm-pm-title">No refund</div>
+                      <div class="zm-pm-desc">Contact us in advance — we will try to find a solution.</div>
+                    </div>
+                  </div>
+                </div>
+                <a href="/vozvrat" target="_blank" class="zm-pm-link">Full cancellation policy →</a>
+              </div>
+            </div>
+            <div class="zm-rules">
+              <div class="zm-rules-hdr" id="zm-rules-hdr">House rules <span class="zm-rules-arr">›</span></div>
+              <div class="zm-rules-body" id="zm-rules-body">
+                <ul>
+                  <li>Check-in after 14:00, check-out before 12:00</li>
+                  <li>No smoking in rooms</li>
+                  <li>Quiet hours 23:00 to 8:00</li>
+                  <li>Please treat the property with care</li>
+                  <li>Pets by prior agreement</li>
+                </ul>
+              </div>
+              <label class="zm-agree"><input type="checkbox" id="zm-agree"><span>I agree to the house rules and booking policy</span></label>
+            </div>
+            <div class="zm-pd-block">
+              <div class="zm-pd-title">Personal Data · 152-FZ</div>
+              <div class="zm-pd-info">
+                Controller: <strong>IP Grigoryan D.K.</strong> We collect name, phone, email — for booking only.
+                <a href="/privacy" target="_blank" style="color:#e85d26;white-space:nowrap;">Privacy Policy →</a>
+              </div>
+              <label class="zm-agree"><input type="checkbox" id="zm-agree-pd"><span>I consent to the processing of my personal data</span></label>
+            </div>
+            <div class="zm-errmsg" id="zm-err"></div>
+            <div class="zm-trust-badges"><span class="zm-trust-badge">🔒 Secure booking</span><span class="zm-trust-badge">✓ Free cancellation 3+ days</span><span class="zm-trust-badge">Pay on arrival</span></div>
+            <button class="zm-submit" id="zm-submit">Confirm booking →</button>
+            <button class="zm-next-mob" id="zm-next-mob">Next →</button>
+          </div>
+          <div class="zm-sum-col">
+            <div class="zm-sum-card">
+              <div class="zm-sum-hdr">Your booking</div>
+              <div class="zm-sum-body" id="zm-sum"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 2.5: Подтверждение — только мобиль -->
+      <div class="zm-step" id="zms25">
+        <div class="zm-confirm-wrap">
+          <div class="zm-confirm-scroll">
+            <div class="zm-confirm-sum">
+              <div class="zm-sum-hdr">Your booking</div>
+              <div class="zm-sum-body" id="zm-sum-mob"></div>
+            </div>
+            <div class="zm-errmsg" id="zm-err-mob"></div>
+          </div>
+          <div class="zm-confirm-footer">
+            <button class="zm-confirm-submit" id="zm-submit-mob">Book now</button>
+            <button class="zm-confirm-back-btn" id="zm-confirm-back">← Edit details</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="zm-step" id="zms3">
+        <div class="zm-ok-wrap">
+          <div class="zm-ok">
+            <div class="zm-ok-ico">&#10003;</div>
+            <div class="zm-ok-title">Booking received!</div>
+            <p class="zm-ok-text">We received your booking and will confirm within a few hours.</p>
+            <p class="zm-ok-text">Your voucher will be sent after confirmation — usually within 1 hour.</p>
+            <div class="zm-ok-id" id="zm-ok-id"></div>
+            <p class="zm-ok-phone">Questions: <strong>+7 (993) 255-25-11</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+'use strict';
+
+var LANG = 'en';
+var API = 'https://script.google.com/macros/s/AKfycbxOV55rJVm67Nr0Xpo3AyGKtBqjJfaqSsGEl6YxTjbxmamI0yvgNBKnNGgBs48T5q-F/exec';
+
+var ROOMS = {
+  'Standard': { apiKey:'Стандартный', ids:['STD-1','STD-2','STD-3'],
+    imgs:[], // загружается из таблицы через getRooms
+    imgFallback:'https://optim.tildacdn.com/tild3365-6234-4761-a337-383139623164/-/cover/720x720/center/center/-/format/webp/photo1701456552.jpeg.webp',
+    desc:'Cozy room with a double bed and private bathroom.', amen:['Wi-Fi','TV','Fridge','Shower','Parking','Breakfast'], base:10000, total:3, cap:2 },
+  'Smart': { apiKey:'Смарт', ids:['SRT-1'],
+    imgs:[], // загружается из таблицы через getRooms
+    imgFallback:'https://optim.tildacdn.com/tild3836-3637-4734-a462-613136656561/-/cover/720x720/center/center/-/format/webp/photo1701540198_1.jpeg.webp',
+    desc:'Modern room with a functional layout.', amen:['Wi-Fi','TV','Fridge','Shower','Parking','Breakfast'], base:9500, total:1, cap:2 }
+};
+
+var SVCS = [
+  { id:'sauna',     name:'Sauna + jacuzzi',           desc:'3 hours, up to 3 guests included.',                                              ico:'🧖', price:3000, unit:'per session',        hasQ:true,  maxQ:6,  hint:'Up to 3 guests: 3,000 \u20bd · Each extra: +1,000 \u20bd' },
+  { id:'excursion', name:'Tour: Ruskeala Express', desc:'Train + ticket to Ruskeala Mountain Park. Transfer from park +1,000 \u20bd/person.',      ico:'🚂', price:5000, unit:'per person',       hasQ:true,  maxQ:10, hint:'5,000 \u20bd/person + transfer 1,000 \u20bd/person' },
+  { id:'romance',   name:'Romantic decoration',    desc:'Fruits, rose, champagne. Set up before arrival.',                           ico:'🌹', price:5000, unit:'per room',        hasQ:false },
+  { id:'transfer',  name:'Station transfer',         desc:'Pick-up at Sortavala station. One way.',                      ico:'🚗', price:500,  unit:'one way',  hasQ:false },
+  { id:'wine',      name:'Bottle of wine/champagne',   desc:'Karelian wine or sparkling. Delivered to room.',                              ico:'🍾', price:2300, unit:'per bottle',      hasQ:false }
+];
+
+
+var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var _MONTHS_ORIG = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DAYS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+var S = {
+  ci:null, co:null, nights:0, guests:2,
+  calY:new Date().getFullYear(), calM:new Date().getMonth(),
+  occ:{}, occ2:{}, avail:[], prices:{}, alts:[],
+
+  qty:{'Standard':1,'Smart':1},
+  availLoaded:false,  // true = ответ от API получен; false = ошибка сети
+  selType:null, selIds:[], selPrice:0,
+  svcs:{}, promo:{on:false,code:null,disc:0}
+};
+
+/* ── utils ── */
+function $(id){ return document.getElementById(id); }
+function pd(s){ if(!s)return null; var p=s.split('-'); return new Date(+p[0],+p[1]-1,+p[2]); }
+function ds(y,m,d){ return y+'-'+(m+1<10?'0':'')+(m+1)+'-'+(d<10?'0':'')+d; }
+function fd(s){ if(!s)return''; var p=s.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
+function nw(n){ return n===1?'night':'nights'; }
+function gw(n){ return n===1?'adult':'adults'; }
+function rub(n){ return n.toLocaleString('ru-RU')+' ₽'; }
+function svcTotal(sv,qty){
+  if(sv.id==='sauna') return sv.price+Math.max(0,qty-3)*1000;
+  if(sv.id==='excursion') return sv.price*qty+qty*1000;
+  return sv.price;
+}
+var svcTotal2=svcTotal;
+// dynPrice удалена — цены приходят с сервера через getOccupancy
+
+/* ── fields ── */
+function updateFields(){
+  var cv=$('zr-ci-val'), ov=$('zr-co-val');
+  cv.textContent=S.ci?fd(S.ci):'Book'; cv.className='zr-field-val'+(S.ci?' zr-set':'');
+  ov.textContent=S.co?fd(S.co):'Book'; ov.className='zr-field-val'+(S.co?' zr-set':'');
+  $('zr-ci-x').className='zr-x'+(S.ci?' zr-show':'');
+  $('zr-co-x').className='zr-x'+(S.co?' zr-show':'');
+}
+
+/* ── occupancy — загружаем ОБА месяца с красивым лоадером ── */
+
+// Сезонные сообщения — меняются в зависимости от месяца
+function getLoadingMessages(){
+  var mon = new Date().getMonth();
+  var base = [
+    ['Checking availability while you were reading this...','One moment'],
+    ['Loading Karelian vibes...','Almost there'],
+    ['Finding the best dates for you','Just a couple of seconds'],
+  ];
+  var seasonal = {
+    0:[['Asking Santa to free up the best room...','He lives nearby'],
+       ['Counting snowflakes for your dates...','Lots of them']],
+    1:[['Negotiating with the Karelian frost...','It agreed'],
+       ['Waking the bear up - he knows the free dates...','Slightly grumpy']],
+    2:[['Checking when Lake Ladoga thaws for your dates...','Spring is near'],
+       ['Converting prices from Karelian to roubles...','Complex exchange rate']],
+    3:[['Asking the birch trees about availability...','They whispered yes'],
+       ['Loading spring Karelia...','Very beautiful']],
+    4:[['Counting days until white nights...','Almost here!'],
+       ['Waking up Ruskeala waterfall after winter...','In great mood']],
+    5:[['Negotiating with white nights for your visit...','They promise to stay longer'],
+       ['Asking Lake Ladoga about the weather...','Says: come on in']],
+    6:[['Counting white nights... there are so many...','The sun simply will not leave'],
+       ['White nights agreed to wait for you...','They said yes']],
+    7:[['Asking Lake Ladoga if it is warm on your dates...','It says: jump in'],
+       ['Loading Karelian summer - best in the world (subjectively)...','But genuinely great']],
+    8:[['Convincing summer to stay for your dates...','Considering it'],
+       ['Counting golden leaves for your arrival...','There will be many']],
+    9:[['Loading golden autumn Karelia...','Best season, say locals'],
+       ['Checking that mushroom pickers cleared the forest...','Almost done']],
+    10:[['Asking Karelian firs about free dates...','They know everything'],
+        ['Loading cozy autumn with hot tea...','Tea included in the wait']],
+    11:[['Finding the warmest dates in Karelian December...','Not easy, but we are trying'],
+        ['Waking up Santa, asking for the best room...','He is busy but promised']],
+  };
+  var extra = seasonal[mon] || [];
+  return base.concat(extra);
+}
+function showCalLoader(){
+  var msgs = getLoadingMessages();
+  var idx = 0;
+  // Показываем заголовок месяцев сразу
+  var _mob=window.innerWidth<=768;
+  if(_mob){
+    $('zr-months').innerHTML='<span>'+MONTHS[S.calM]+' '+S.calY+'</span>';
+  } else {
+    $('zr-months').innerHTML='<span>'+MONTHS[S.calM]+' '+S.calY+'</span><span>'+MONTHS[(S.calM+1)%12]+' '+(S.calM===11?S.calY+1:S.calY)+'</span>';
+  }
+  // Вместо календарей — лоадер
+  $('zr-cals').innerHTML='<div class="zr-cal-loader" id="zr-loader" style="grid-column:1/-1">'
+    +'<div class="zr-cal-spinner"></div>'
+    +'<div class="zr-cal-msg" id="zr-load-msg">'+msgs[0][0]+'</div>'
+    +'<div class="zr-cal-msg-sub" id="zr-load-sub">'+msgs[0][1]+'</div>'
+    +'</div>';
+  // Крутим сообщения каждые 1.8 сек
+  var timer = setInterval(function(){
+    idx = (idx + 1) % msgs.length;
+    var msgEl = document.getElementById('zr-load-msg');
+    var subEl = document.getElementById('zr-load-sub');
+    if(!msgEl) { clearInterval(timer); return; }
+    msgEl.style.animation = 'none';
+    subEl.style.animation = 'none';
+    void msgEl.offsetWidth; // reflow
+    msgEl.style.animation = 'zrMsgFade 0.5s ease';
+    subEl.style.animation = 'zrMsgFade 0.5s ease';
+    msgEl.textContent = msgs[idx][0];
+    subEl.textContent = msgs[idx][1];
+  }, 1800);
+  return timer;
+}
+
+function loadOcc(){
+  var m1=S.calM+1, y1=S.calY;
+  var m2, y2;
+  if(S.calM===11){ m2=1; y2=S.calY+1; } else { m2=S.calM+2; y2=S.calY; }
+
+  // Показываем лоадер с анимированными сообщениями
+  var loaderTimer = showCalLoader();
+
+  var mob=window.innerWidth<=768;
+  if(mob){
+    // Мобиле: грузим только текущий месяц — быстрее в 2 раза
+    fetch(API+'?action=getOccupancy&month='+m1+'&year='+y1)
+      .then(function(r){return r.json();}).catch(function(){return {};})
+      .then(function(res){
+        clearInterval(loaderTimer);
+        S.occ = res.success ? res.occupancy : {};
+        S.occ2 = {};
+        renderPicker();
+      });
+  } else {
+    // Десктоп: грузим оба месяца
+    Promise.all([
+      fetch(API+'?action=getOccupancy&month='+m1+'&year='+y1).then(function(r){return r.json();}).catch(function(){return {};}),
+      fetch(API+'?action=getOccupancy&month='+m2+'&year='+y2).then(function(r){return r.json();}).catch(function(){return {};})
+    ]).then(function(res){
+      clearInterval(loaderTimer);
+      S.occ = res[0].success ? res[0].occupancy : {};
+      S.occ2= res[1].success ? res[1].occupancy : {};
+      renderPicker();
+    });
+  }
+}
+
+/* ── picker ── */
+function renderPicker(){
+  var m1=S.calM, m2=(S.calM+1)%12, y2=S.calM===11?S.calY+1:S.calY;
+  var mob=window.innerWidth<=768;
+  // На мобиле — только текущий месяц в заголовке
+  if(mob){
+    $('zr-months').innerHTML='<span>'+MONTHS[m1]+' '+S.calY+'</span>';
+  } else {
+    $('zr-months').innerHTML='<span>'+MONTHS[m1]+' '+S.calY+'</span><span>'+MONTHS[m2]+' '+y2+'</span>';
+  }
+  $('zr-cals').innerHTML='<div class="zr-cal" id="zrcal0"></div>'+(mob?'':'<div class="zr-cal" id="zrcal1"></div>');
+  renderMonth(0,S.calY,S.calM);
+  if(!mob) renderMonth(1,y2,m2);
+  var inf=$('zr-pinfo');
+  if(S.ci&&S.co) inf.innerHTML='<strong>'+S.nights+' '+nw(S.nights)+'</strong>, from '+fd(S.ci)+' to '+fd(S.co);
+  else if(S.ci) inf.textContent='Select check-out (min. 2 nights)';
+  else inf.textContent='Select check-in date';
+}
+
+function renderMonth(idx,year,month){
+  var first=new Date(year,month,1).getDay(), dim=new Date(year,month+1,0).getDate();
+  var off=first===0?6:first-1;
+  var today=new Date(); today.setHours(0,0,0,0);
+  var ci=S.ci?pd(S.ci):null, co=S.co?pd(S.co):null;
+  var occData = idx===0 ? S.occ : S.occ2; // idx=0 левый месяц, idx=1 правый
+  var html='<table><thead><tr>'+DAYS.map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr></thead><tbody>';
+  var cells=[];
+  for(var i=0;i<off;i++) cells.push('<td></td>');
+  for(var d=1;d<=dim;d++){
+    var date=new Date(year,month,d), dstr=ds(year,month,d);
+    var past=date<today;
+    var occ=occData[d]||{status:'free'};
+    // Цена of сервера (включает все коэффициенты: сезон, выходные, загрузка)
+    var p = occ.priceStd || (ROOMS['Standard']?ROOMS['Standard'].base:10000);
+    var cls='zr-day', clickable=false, priceStr='';
+    var isSelStart = ci && date.getTime()===ci.getTime();
+    var isSelEnd   = co && date.getTime()===co.getTime();
+    var isInRange  = ci && co && date>ci && date<co;
+
+    if(past){
+      cls+=' zr-past';
+    } else if(occ.status==='full'){
+      cls+=' zr-full';
+    } else if(isSelStart && isSelEnd){
+      // Одиночная дата — оба конца совпадают
+      cls+=' zr-sel-s zr-sel-e'; clickable=true;
+    } else if(isSelStart){
+      cls+=' zr-sel-s'; clickable=true;
+    } else if(isSelEnd){
+      cls+=' zr-sel-e'; clickable=true;
+    } else if(isInRange){
+      cls+=' zr-in-r'; clickable=true;
+    } else if(S.ci&&!S.co){
+      // Режим выбора выезда
+      var diff=Math.round((date-pd(S.ci))/86400000);
+      if(dstr===S.ci){ cls+=' zr-sel-s'; clickable=true; }
+      else if(diff>0&&diff<2){ cls+=' zr-too-short'; }
+      else { cls+=' zr-free'; clickable=true; }
+    } else {
+      cls+=' zr-free'; clickable=true;
+    }
+    if(!past&&occ.status!=='full') priceStr='<span class="zr-dp">'+p.toLocaleString('ru-RU')+'</span>';
+    var tipAttrs='';
+    if(S.ci&&!S.co&&clickable&&dstr>S.ci){
+      var n=Math.round((date-pd(S.ci))/86400000);
+      if(n>=2) tipAttrs=' data-tip="'+n+'"';
+    }
+    var click=clickable?' data-day="'+dstr+'"':'';
+    cells.push('<td><div class="'+cls+'"'+click+tipAttrs+'><span class="zr-dn">'+d+'</span>'+priceStr+'</div></td>');
+  }
+  var rows='';
+  for(var i=0;i<cells.length;i+=7){
+    var w=cells.slice(i,i+7);
+    while(w.length<7)w.push('<td></td>');
+    rows+='<tr>'+w.join('')+'</tr>';
+  }
+  html+=rows+'</tbody></table>';
+  $('zrcal'+idx).innerHTML=html;
+
+  /* attach day click + tooltip via delegation */
+  $('zrcal'+idx).addEventListener('click',function(e){
+    var day=e.target.closest('[data-day]');
+    if(day) dayClick(day.dataset.day);
+  });
+  $('zrcal'+idx).addEventListener('mouseover',function(e){
+    var day=e.target.closest('[data-tip]');
+    if(day&&!day.querySelector('.zr-tip')){
+      var t=document.createElement('div');
+      t.className='zr-tip';
+      t.textContent=day.dataset.tip+' '+nw(+day.dataset.tip);
+      day.appendChild(t);
+    }
+  });
+  $('zrcal'+idx).addEventListener('mouseout',function(e){
+    var day=e.target.closest('[data-tip]');
+    if(day){ var t=day.querySelector('.zr-tip'); if(t)t.remove(); }
+  });
+}
+
+function dayClick(dstr){
+  if(!S.ci||S.co){ S.ci=dstr; S.co=null; S.nights=0; }
+  else if(dstr===S.ci){ S.ci=null; S.co=null; S.nights=0; }
+  else if(dstr<S.ci){ S.ci=dstr; S.co=null; S.nights=0; }
+  else {
+    var n=Math.round((pd(dstr)-pd(S.ci))/86400000);
+    if(n<2)return;
+    S.co=dstr; S.nights=n;
+    $('zr-picker').classList.remove('zr-open');
+  }
+  updateFields(); renderPicker();
+}
+
+/* ── modal ── */
+function openModal(){
+  $('zr-overlay').classList.add('zr-open');
+  $('zr-modal').classList.add('zr-open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  $('zr-overlay').classList.remove('zr-open');
+  $('zr-modal').classList.remove('zr-open');
+  document.body.style.overflow='';
+  stopTimer();
+}
+function isMobileLayout(){ return window.innerWidth<=768; }
+
+function goStep(n){
+  // На мобиле шаг 3 = шаг 2.5 (подтверждение) + шаг 4 = success
+  // Мы добавили zms25 как промежуточный, пронумеруем иначе:
+  // n=1 → zms1, n=2 → zms2, n=2.5 → zms25, n=3 → zms3
+  var steps=document.querySelectorAll('.zm-step');
+  steps.forEach(function(s){ s.classList.remove('zm-on'); });
+  if(n===2.5){
+    var s25=document.getElementById('zms25');
+    if(s25)s25.classList.add('zm-on');
+  } else {
+    // zms1=i0, zms2=i1, zms25=i2, zms3=i3
+    var idx=n===1?0:n===2?1:3;
+    if(steps[idx])steps[idx].classList.add('zm-on');
+  }
+  // Прогресс-бар: 1→Номера, 2/2.5→Данные, 3→Подтверждение
+  ['zmps1','zmps2','zmps3'].forEach(function(id,i){
+    var e=$(id); if(!e)return;
+    e.classList.remove('zm-active','zm-done','zm-ps-back');
+    if(n===1){ if(i===0)e.classList.add('zm-active'); }
+    else if(n===2){ if(i===0){e.classList.add('zm-done');e.classList.add('zm-ps-back');} if(i===1)e.classList.add('zm-active'); }
+    else if(n===2.5){
+      if(i===0){e.classList.add('zm-done');e.classList.add('zm-ps-back');}
+      // «Данные» (i===1) — done И кликабельный для возврата
+      if(i===1){e.classList.add('zm-done');e.classList.add('zm-ps-back');e.setAttribute('data-step','2');}
+      if(i===2)e.classList.add('zm-active');
+    }
+    else if(n===3){ if(i<3)e.classList.add('zm-done'); }
+  });
+}
+function updateHdrDates(){
+  var hd=$('zm-hdr-dates');
+  if(!S.ci||!S.co){hd.innerHTML='';return;}
+  hd.innerHTML='<div class="zm-hdf" id="zm-hdf1"><div class="zm-hdf-l">Check-in</div><div class="zm-hdf-v">'+fd(S.ci)+'</div></div>'
+    +'<div class="zm-hd-sep"></div>'
+    +'<div class="zm-hdf" id="zm-hdf2"><div class="zm-hdf-l">Check-out</div><div class="zm-hdf-v">'+fd(S.co)+'</div></div>'
+    +'<div class="zm-hd-sep"></div>'
+    +'<div class="zm-hd-nights">'+S.nights+' '+nw(S.nights)+'</div>'
+    +'<div class="zm-hd-sep"></div>'
+    +'<div class="zm-hd-nights">&#128100; '+S.guests+' '+gw(S.guests)+'</div>';
+  $('zm-hdf1').addEventListener('click',closeModal);
+  $('zm-hdf2').addEventListener('click',closeModal);
+}
+
+/* ── rooms ── */
+function loadRooms(ci,co){
+  S.ci=ci; S.co=co;
+  S.nights=Math.round((pd(co)-pd(ci))/86400000);
+  updateFields(); updateHdrDates();
+  openModal(); goStep(1); S.selType=null;
+  $('zm-rooms').innerHTML='<div class="zm-load"><div class="zm-spin"></div>Checking availability...</div>';
+  Promise.all([
+    fetch(API+'?action=checkAvailability&checkIn='+ci+'&checkOut='+co).then(function(r){return r.json();}),
+    fetch(API+'?action=getPrices&checkIn='+ci+'&checkOut='+co).then(function(r){return r.json();}),
+    fetch(API+'?action=getRooms').then(function(r){return r.json();}).catch(function(){return {};})
+  ]).then(function(res){
+    S.avail=res[0].rooms||[]; S.prices=res[1].prices||{}; S.alts=res[0].alternatives||[];
+    S.availLoaded=true;
+    // Подставляем фото из таблицы в объект ROOMS
+    if(res[2]&&res[2].success&&res[2].rooms){
+      Object.keys(res[2].rooms).forEach(function(apiType){
+        var photos=res[2].rooms[apiType].imgs||[];
+        if(!photos.length)return;
+        // Ищем совпадение по типу (для EN виджета — через apiKey)
+        Object.keys(ROOMS).forEach(function(k){
+          var r=ROOMS[k];
+          var match=(k===apiType)||(r.apiKey&&r.apiKey===apiType);
+          if(match&&photos.length)r.imgs=photos;
+        });
+      });
+    }
+    renderRooms();
+  }).catch(function(){ S.avail=[]; S.prices={}; S.alts=[]; S.availLoaded=false; renderRooms(); });
+}
+
+
+/* Маппинг API-имён на отображаемые */
+function displayName(apiName){
+  var map={'Стандартный':'Standard','Смарт':'Smart'};
+  return map[apiName]||apiName;
+}
+function renderRooms(){
+  /* check if anything available */
+  // Все занято = API ответил И ни один номер не вернулся как свободный
+  var anyAvail=S.avail.some(function(r){ return Object.keys(ROOMS).some(function(t){ return ROOMS[t].ids.indexOf(r.id)>=0; }); });
+  if(S.availLoaded&&!anyAvail&&S.alts&&S.alts.length>0){
+    var h='<div class="zm-no-rooms"><div class="zm-no-icon">📅</div>'
+      +'<div class="zm-no-title">No rooms available for selected dates</div>'
+      +'<div class="zm-no-sub">'+fd(S.ci)+' — '+fd(S.co)+' · '+S.nights+' '+nw(S.nights)+'</div></div>'
+      +'<div class="zm-alts-title">Nearest available options:</div>'
+      +'<div class="zm-alts-grid" id="zm-alts-grid"></div>';
+    $('zm-rooms').innerHTML=h;
+    var grid=$('zm-alts-grid');
+    S.alts.forEach(function(alt,i){
+      var room=ROOMS[alt.type]; var price=room?room.base:10000;
+      var total=price*alt.nights;
+      var arrow=alt.direction==='before'?'←':'→';
+      var div=document.createElement('div');
+      div.className='zm-alt';
+      div.innerHTML='<div class="zm-alt-arr">'+arrow+'</div>'
+        +'<div class="zm-alt-type">'+displayName(alt.type)+'</div>'
+        +'<div class="zm-alt-dates">'+fd(alt.checkIn)+' → '+fd(alt.checkOut)+'</div>'
+        +'<div class="zm-alt-nights">'+alt.nights+' night'+(alt.nights===1?'':'s')+'</div>'
+        +'<div class="zm-alt-price">'+price.toLocaleString('ru-RU')+' ₽/night</div>'
+        +'<div class="zm-alt-total">Total: '+total.toLocaleString('ru-RU')+' ₽</div>'
+        +'<button class="zm-alt-btn">Book these dates</button>';
+      (function(a){ div.querySelector('.zm-alt-btn').addEventListener('click',function(){ loadRooms(a.checkIn,a.checkOut); }); })(alt);
+      grid.appendChild(div);
+    });
+    return;
+  }
+
+  var html='';
+  Object.keys(ROOMS).forEach(function(typeName){
+    var type=ROOMS[typeName];
+    var avail=S.avail.filter(function(r){ return type.ids.indexOf(r.id)>=0; });
+    // ИСПРАВЛЕНИЕ: если API ответил (availLoaded=true) и номер не в списке свободных — он занят.
+    // Если API не ответил (сеть) — показываем как доступные (fallback).
+    var availCnt = S.availLoaded ? avail.length : type.total;
+    var isAvail=availCnt>0, isLast=availCnt===1;
+    var price=(S.prices[type.apiKey||typeName]||S.prices[typeName]||{}).perNight||type.base;
+    var effectiveAvail=guestOverflow?0:availCnt;
+    // Минимальное количество номеров = ceil(гостей / вместимость номера)
+    var roomCap = type.cap || 2; // вместимость одного номера
+    var minRooms = Math.min(Math.ceil(S.guests / roomCap), Math.min(effectiveAvail, type.total));
+    var maxQty = Math.min(effectiveAvail, type.total);
+    var qty = Math.max(minRooms, Math.min(S.qty[typeName]||1, maxQty));
+    S.qty[typeName] = qty; // синхронизируем сохранённое значение
+
+    // Смарт недоступен при 3+ гостях (вместимость 2)
+    if (typeName === 'Smart' && S.guests >= 3) {
+      return; // не рендерим карточку вообще
+    }
+    // Вместимость: Смарт = макс 2 чел, Стандартный = макс 4 чел
+    var maxGuests=(typeName==='Smart')?2:4;
+    var guestOverflow=S.guests>maxGuests;
+    var badge;
+    if(guestOverflow){
+      badge='<span class="zm-badge zm-na">Unavailable — max. '+maxGuests+' guests</span>';
+    } else if(!isAvail){
+      badge='<span class="zm-badge zm-na">Sold out</span>';
+    } else if(isLast){
+      badge='<span class="zm-badge zm-last">🔥 Last one!</span>';
+    } else {
+      badge='<span class="zm-badge zm-cnt">Available: '+availCnt+' of '+type.total+'</span>';
+    }
+    var footer=(!guestOverflow&&isAvail)
+      ?'<div class="zm-qty-wrap"><span class="zm-ql">Rooms:</span><div class="zm-qctrl">'
+        +'<button class="zm-qb" data-type="'+typeName+'" data-delta="-1" data-max="'+maxQty+'" data-min="'+minRooms+'" data-price="'+price+'" '+(qty<=minRooms?'disabled':'')+' title="'+(qty<=minRooms?'Минимум '+minRooms+' room(s) for '+S.guests+' гостей':'')+'">&#8722;</button>'
+        +'<span class="zm-qnum" id="zmqv-'+typeName+'">'+qty+'</span>'
+        +'<button class="zm-qb" data-type="'+typeName+'" data-delta="1" data-max="'+maxQty+'" data-price="'+price+'" '+(qty>=maxQty?'disabled':'')+'>&#43;</button>'
+        +'</div></div>'
+        +'<button class="zm-sel-btn" data-seltype="'+typeName+'" data-selprice="'+price+'">Select</button>'
+      :'<span style="font-size:13px;color:#bbb">Unavailable</span>';
+    var carImgs=(type.imgs&&type.imgs.length)?type.imgs:[type.imgFallback||''];
+    var carId='zmcar-'+typeName.replace(/[^a-z0-9]/gi,'');
+    var carSlides=carImgs.map(function(u){return '<div class="zm-carousel-slide"><img src="'+u+'" alt="'+typeName+'" loading="lazy"></div>';}).join('');
+    var carDots=carImgs.length>1?'<div class="zm-carr-dots">'+carImgs.map(function(_,i){return '<div class="zm-carr-dot'+(i===0?' zm-on':'')+'" data-ci="'+i+'" data-cid="'+carId+'"></div>';}).join('')+'</div>':'';
+    var carBtns=carImgs.length>1?'<button class="zm-carr-btn zm-carr-prev" data-cid="'+carId+'" data-cd="-1">&#8592;</button><button class="zm-carr-btn zm-carr-next" data-cid="'+carId+'" data-cd="1">&#8594;</button>':'';
+    html+='<div class="zm-room"><div class="zm-room-carousel" id="'+carId+'"><div class="zm-carousel-track" id="'+carId+'-track">'+carSlides+'</div>'+carBtns+carDots+'</div>'
+      +'<div class="zm-room-body">'+badge
+      +'<div class="zm-rname">'+typeName+'</div>'
+      +'<div class="zm-rdesc">'+type.desc+'</div>'
+      +'<div class="zm-amen">'+type.amen.map(function(a){return '<span class="zm-atag">'+a+'</span>';}).join('')+'</div>'
+      +'<div class="zm-rfooter">'
+        +'<div class="zm-price-block">'
+        +'<div class="zm-pa2">'+price.toLocaleString('ru-RU')+' ₽</div>'
+        +'<div class="zm-pp">/night</div>'
+        +'<div class="zm-ptotal">Total: '+(price*S.nights*(S.qty[typeName]||1)).toLocaleString('ru-RU')+' ₽ for '+S.nights+' '+nw(S.nights)+'</div>'
+        +'</div>'
+        +footer+'</div></div></div>';
+  });
+  $('zm-rooms').innerHTML=html;
+  initCarousels();
+
+  /* attach room buttons */
+  $('zm-rooms').querySelectorAll('.zm-qb').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var t=this.dataset.type, delta=+this.dataset.delta, max=+this.dataset.max, price=+this.dataset.price;
+      var minQ=+this.dataset.min||1;
+      var cur=S.qty[t]||1, next=Math.max(minQ,Math.min(max,cur+delta));
+      S.qty[t]=next;
+      var qel=$('zmqv-'+t); if(qel)qel.textContent=next;
+      var btns=$('zm-rooms').querySelectorAll('.zm-qb[data-type="'+t+'"]');
+      if(btns[0]){ var mn=+btns[0].dataset.min||1; btns[0].disabled=next<=mn; }
+      if(btns[1])btns[1].disabled=next>=max;
+    });
+  });
+  $('zm-rooms').querySelectorAll('.zm-sel-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      selectRoom(this.dataset.seltype, +this.dataset.selprice);
+    });
+  });
+}
+
+function initCarousels(){
+  var _ci={};
+  function goSlide(id,dir){
+    var track=document.getElementById(id+'-track');
+    if(!track)return;
+    var slides=track.querySelectorAll('.zm-carousel-slide');
+    if(!slides.length)return;
+    if(_ci[id]===undefined)_ci[id]=0;
+    _ci[id]=(_ci[id]+dir+slides.length)%slides.length;
+    track.style.transform='translateX(-'+(_ci[id]*100)+'%)';
+    document.querySelectorAll('.zm-carr-dot[data-cid="'+id+'"]').forEach(function(d){
+      d.classList.toggle('zm-on', +d.dataset.ci===_ci[id]);
+    });
+  }
+  document.querySelectorAll('.zm-carr-btn').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      goSlide(this.dataset.cid, +this.dataset.cd);
+    });
+  });
+  document.querySelectorAll('.zm-carr-dot').forEach(function(dot){
+    dot.addEventListener('click',function(e){
+      e.stopPropagation();
+      var id=this.dataset.cid, idx=+this.dataset.ci;
+      var track=document.getElementById(id+'-track');
+      if(!track)return;
+      _ci[id]=idx;
+      track.style.transform='translateX(-'+(idx*100)+'%)';
+      document.querySelectorAll('.zm-carr-dot[data-cid="'+id+'"]').forEach(function(d){
+        d.classList.toggle('zm-on', +d.dataset.ci===idx);
+      });
+    });
+  });
+}
+
+function selectRoom(typeName, price){
+  var type=ROOMS[typeName], qty=S.qty[typeName]||1;
+  var av=S.avail.filter(function(r){ return type.ids.indexOf(r.id)>=0; });
+  S.selType=typeName; S.selIds=av.slice(0,qty).map(function(r){return r.id;});
+  if(S.selIds.length<qty)S.selIds=type.ids.slice(0,qty);
+  S.selPrice=price; S.svcs={}; S.promo={on:false,code:null,disc:0};
+  renderSvcs(); renderSum(); goStep(2);
+  startTimer();
+}
+
+
+/* Бейдж «Лучшая цена» в сводке */
+function bestPriceBadge(){
+  if(!S.occ||!S.ci||!S.selPrice)return '';
+  // Собираем все цены из данных занятости вокруг выбранных дат
+  var prices=[];
+  [S.occ,S.occ2].forEach(function(o){
+    if(!o)return;
+    Object.keys(o).forEach(function(d){
+      var v=o[d]; if(v&&v.status!=='full'&&v.priceStd)prices.push(v.priceStd);
+    });
+  });
+  if(!prices.length)return '';
+  var minP=Math.min.apply(null,prices);
+  if(S.selPrice<=minP+500)return '<div class="zm-best-badge"><span class="zm-best-badge-icon">🏷</span>Best price for these dates</div>';
+  return '';
+}
+
+/* ── services ── */
+function renderSvcs(){
+  $('zm-svcs').innerHTML=SVCS.map(function(s){
+    var sel=S.svcs[s.id], qty=sel?sel.qty:(s.id==='excursion'?S.guests:1);
+    var lt=sel?svcTotal(s,qty):s.price;
+    var hint=s.hint?'<div class="zm-svc-hint">'+s.hint+'</div>':'';
+    var qrow=s.hasQ&&sel?'<div class="zm-svc-qrow">'
+      +'<span class="zm-svc-ql">'+(s.id==='sauna'?'Guests:':'Persons:')+'</span>'
+      +'<button class="zm-sqb" data-id="'+s.id+'" data-delta="-1">&#8722;</button>'
+      +'<span class="zm-sqn" id="zmsvq-'+s.id+'">'+qty+'</span>'
+      +'<button class="zm-sqb" data-id="'+s.id+'" data-delta="1">&#43;</button>'
+      +'<span class="zm-sqt" id="zmsvt-'+s.id+'">'+rub(lt)+'</span></div>':'';
+    return '<div class="zm-svc'+(sel?' zm-svc-on':'')+'" data-svcid="'+s.id+'">'
+      +'<div class="zm-svc-chk">'+(sel?'✓':'')+'</div>'
+      +'<div class="zm-svc-ico">'+s.ico+'</div>'
+      +'<div class="zm-svc-info"><div class="zm-svc-name">'+s.name+'</div>'
+        +'<div class="zm-svc-desc">'+s.desc+'</div>'+hint+qrow+'</div>'
+      +'<div class="zm-svc-pc"><div class="zm-svc-pr" id="zmsvp-'+s.id+'">'+rub(lt)+'</div><div class="zm-svc-un">'+s.unit+'</div></div>'
+      +'</div>';
+  }).join('');
+
+  $('zm-svcs').querySelectorAll('.zm-svc').forEach(function(el){
+    el.addEventListener('click',function(e){ if(!e.target.closest('.zm-svc-qrow')) toggleSvc(el.dataset.svcid); });
+  });
+  $('zm-svcs').querySelectorAll('.zm-sqb').forEach(function(btn){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
+      var id=this.dataset.id, delta=+this.dataset.delta;
+      if(!S.svcs[id])return;
+      var sv=SVCS.find(function(s){return s.id===id;})||{maxQ:10};
+      S.svcs[id].qty=Math.max(1,Math.min(sv.maxQ||10,S.svcs[id].qty+delta));
+      var lt=svcTotal(S.svcs[id],S.svcs[id].qty);
+      var qe=$('zmsvq-'+id); if(qe)qe.textContent=S.svcs[id].qty;
+      var te=$('zmsvt-'+id); if(te)te.textContent=rub(lt);
+      var pe=$('zmsvp-'+id); if(pe)pe.textContent=rub(lt);
+      renderSum();
+    });
+  });
+}
+
+function toggleSvc(id){
+  var sv=SVCS.find(function(s){return s.id===id;}); if(!sv)return;
+  if(S.svcs[id]) delete S.svcs[id];
+  else S.svcs[id]=Object.assign({},sv,{qty:sv.id==='excursion'?S.guests:1});
+  renderSvcs(); renderSum();
+}
+
+/* ── summary ── */
+function renderSum(){
+  var qty=S.qty[S.selType]||1, roomT=S.selPrice*S.nights*qty;
+  var svcT=Object.values(S.svcs).reduce(function(s,sv){return s+svcTotal(sv,sv.qty);},0);
+  var disc=S.promo.on?Math.min(S.promo.disc,roomT):0;
+  var total=roomT-disc+svcT;
+
+  // ── Секция 1: детали номера ──
+  var html='<div class="zm-sum-section">'
+    +'<div class="zm-sum-section-title">Room</div>'
+    +'<div class="zm-sr"><span class="zm-sl">Type</span><span class="zm-sv">'+S.selType+(qty>1?' × '+qty:'')+'</span></div>'
+    +'<div class="zm-sr"><span class="zm-sl">Check-in</span><span class="zm-sv">'+fd(S.ci)+'</span></div>'
+    +'<div class="zm-sr"><span class="zm-sl">Check-out</span><span class="zm-sv">'+fd(S.co)+'</span></div>'
+    +'<div class="zm-sr"><span class="zm-sl">'+S.nights+' '+nw(S.nights)+' × '+rub(S.selPrice)+'</span><span class="zm-sv" style="font-weight:700">'+rub(roomT)+'</span></div>'
+    +bestPriceBadge()
+    +'</div>';
+
+  // ── Секция 2: доп. услуги (если есть) ──
+  var svcs=Object.values(S.svcs);
+  if(svcs.length>0){
+    html+='<div class="zm-sum-section">'
+      +'<div class="zm-sum-section-title">Add-ons</div>';
+    svcs.forEach(function(sv){
+      var lt=svcTotal(sv,sv.qty);
+      html+='<div class="zm-sr"><span class="zm-sl">'+sv.ico+' '+sv.name+(sv.qty>1&&sv.hasQ?' ×'+sv.qty:'')+'</span><span class="zm-sv">'+rub(lt)+'</span></div>';
+    });
+    html+='<div class="zm-sr"><span class="zm-sl" style="color:#aaa">Add-ons total</span><span class="zm-sv" style="font-weight:700">'+rub(svcT)+'</span></div>'
+      +'</div>';
+  }
+
+  // ── Скидка (крупно, заметно) ──
+  if(S.promo.on){
+    html+='<div class="zm-sum-discount">'
+      +'<div><div class="zm-sum-discount-lbl">🏷 Promo code '+S.promo.code+'</div><div style="font-size:11px;color:#e85d26;margin-top:2px">discount on accommodation</div></div>'
+      +'<div class="zm-sum-discount-val">−'+rub(disc)+'</div>'
+      +'</div>';
+  }
+
+  // ── Итого ──
+  html+='<div class="zm-sum-total">'
+    +'<div class="zm-sum-total-row">'
+    +'<span class="zm-sum-total-lbl">Total</span>'
+    +'<span class="zm-sum-total-val">'+rub(total)+'</span>'
+    +'</div>'
+    +'</div>'
+    +'<div class="zm-sum-note">Pay on arrival</div>';
+
+  $('zm-sum').innerHTML=html;
+}
+
+/* ── promo ── */
+function promoReset(){
+  S.promo={on:false,code:null,disc:0};
+  var m=$('zm-pmsg'); m.textContent=''; m.className='zm-pmsg';
+  renderSum();
+}
+
+/* ── submit ── */
+function doSubmit(){
+  var name=$('zm-name').value.trim(), phone=$('zm-phone').value.trim(), email=$('zm-email').value.trim(), comment=$('zm-comment').value.trim();
+  var err=$('zm-err'); err.style.display='none';
+  if(!name){err.textContent='Please enter your name';err.style.display='block';return;}
+  if(!phone){err.textContent='Please enter your phone';err.style.display='block';return;}
+  if(!email||email.indexOf('@')<0){err.textContent='Please enter a valid email';err.style.display='block';return;}
+  if(!$('zm-agree').checked){err.textContent='Please accept the house rules';err.style.display='block';return;}
+  if(!$('zm-agree-pd').checked){err.textContent='Please consent to personal data processing';err.style.display='block';return;}
+  var btn=$('zm-submit');
+  var btnMob=document.getElementById('zm-submit-mob');
+  if(btn){btn.disabled=true;btn.textContent='Sending...';}
+  if(btnMob){btnMob.disabled=true;btnMob.textContent='Sending...';}
+  var qty=S.qty[S.selType]||1, ids=[];
+  var chain=Promise.resolve();
+  for(var i=0;i<qty;i++){
+    (function(idx){
+      chain=chain.then(function(){
+        return fetch(API,{method:'POST',body:JSON.stringify({
+          action:'createBooking', checkIn:S.ci, checkOut:S.co,
+          roomId:S.selIds[idx]||S.selIds[0], roomType:S.selType,
+          guestName:name, guestPhone:phone, guestEmail:email, guests:S.guests,
+          lang:'en',
+          promoCode:S.promo.on?S.promo.code:null, discount:S.promo.on?S.promo.disc:0,
+          services:Object.values(S.svcs).map(function(sv){return{id:sv.id,name:sv.name,price:sv.price,qty:sv.qty,ico:sv.ico};}),
+          comment:qty>1?comment+' (Booking '+(idx+1)+' of '+qty+')':comment
+        })}).then(function(r){return r.json();}).then(function(d){if(d.success)ids.push(d.bookingId);});
+      });
+    })(i);
+  }
+  chain.then(function(){
+    if(ids.length>0){
+      $('zm-ok-id').textContent=ids.join(' · ');
+      goStep(3);
+      if(btn){btn.disabled=false;btn.textContent='Confirm booking →';}
+      var _bmob=document.getElementById('zm-submit-mob');
+      if(_bmob){_bmob.disabled=false;_bmob.textContent='Confirm booking →';} 
+      ['zm-name','zm-phone','zm-email','zm-comment','zm-promo'].forEach(function(id){var e=$(id);if(e)e.value='';});
+      $('zm-agree').checked=false; var _pd=$('zm-agree-pd'); if(_pd)_pd.checked=false; S.svcs={}; S.promo={on:false,code:null,disc:0};
+    } else {
+      err.textContent='Error. Please call: +7 (993) 255-25-11'; err.style.display='block';
+      btn.disabled=false; btn.textContent='Confirm booking →';
+    }
+  }).catch(function(){
+    err.textContent='Connection error. Please try again.'; err.style.display='block';
+    btn.disabled=false; btn.textContent='Confirm booking →';
+  });
+}
+
+/* ── INIT ── все события через addEventListener ── */
+function init(){
+  /* search bar */
+  $('zr-fci').addEventListener('click',function(e){ if(e.target.closest('#zr-ci-x'))return; var wasOpen=$('zr-picker').classList.contains('zr-open'); $('zr-picker').classList.toggle('zr-open'); $('zr-gpop').classList.remove('zr-open'); $('zr-fci').classList.toggle('zr-active'); $('zr-fco').classList.remove('zr-active'); if(!wasOpen){ loadOcc(); } });
+  $('zr-fco').addEventListener('click',function(e){ if(e.target.closest('#zr-co-x'))return; var wasOpen=$('zr-picker').classList.contains('zr-open'); $('zr-picker').classList.toggle('zr-open'); $('zr-gpop').classList.remove('zr-open'); $('zr-fco').classList.toggle('zr-active'); $('zr-fci').classList.remove('zr-active'); if(!wasOpen){ loadOcc(); } });
+  // Мобильная кнопка гостей
+  var fgMob = document.getElementById('zr-fg-mobile');
+  if(fgMob) fgMob.addEventListener('click',function(e){
+    e.stopPropagation();
+    var pop=$('zr-gpop');
+    var fgRect=fgMob.getBoundingClientRect();
+    var barRect=$('zr-bar').getBoundingClientRect();
+    var isOpen=pop.classList.contains('zr-open');
+    pop.classList.remove('zr-open');
+    if(!isOpen){
+      pop.style.top=(fgRect.bottom - barRect.top + 8)+'px';
+      pop.style.left=(fgRect.left - barRect.left)+'px';
+      pop.style.right='auto';
+      pop.classList.add('zr-open');
+    }
+  });
+
+  $('zr-fg').addEventListener('click',function(e){
+    e.stopPropagation();
+    var pop=$('zr-gpop'), bar=$('zr-bar');
+    var isOpen=pop.classList.contains('zr-open');
+    pop.classList.remove('zr-open');
+    $('zr-picker').classList.remove('zr-open');
+    $('zr-fci').classList.remove('zr-active');
+    $('zr-fco').classList.remove('zr-active');
+    if(!isOpen){
+      // Вычисляем позицию relative to #zr-bar
+      var fgRect=$('zr-fg').getBoundingClientRect();
+      var barRect=bar.getBoundingClientRect();
+      var rightOffset=barRect.right-fgRect.right;
+      pop.style.top=(bar.offsetHeight+6)+'px';
+      pop.style.right=rightOffset+'px';
+      pop.style.left='auto';
+      pop.classList.add('zr-open');
+    }
+  });
+  $('zr-go-btn').addEventListener('click',function(){
+    if(!S.ci||!S.co){alert('Please select check-in and check-out dates');return;}
+    $('zr-picker').classList.remove('zr-open');
+    loadRooms(S.ci,S.co);
+  });
+  // Мобильная кнопка Показать
+  var _mobBtn=document.getElementById('zr-go-mob'); if(_mobBtn) _mobBtn.addEventListener('click',function(){ $('zr-go-btn').click(); });
+  /* picker nav */
+  // isMobile: 768px и ниже — один месяц, шаг 1; десктоп — два месяца, шаг 2 (чётный)
+  function isMobile(){ return window.innerWidth <= 768; }
+  $('zr-prev').addEventListener('click',function(){
+    var step = isMobile() ? 1 : 2;
+    S.calM -= step;
+    while(S.calM < 0){ S.calM += 12; S.calY--; }
+    loadOcc();
+  });
+  $('zr-next').addEventListener('click',function(){
+    var step = isMobile() ? 1 : 2;
+    S.calM += step;
+    while(S.calM > 11){ S.calM -= 12; S.calY++; }
+    loadOcc();
+  });
+  $('zr-reset-btn').addEventListener('click',function(){ S.ci=null;S.co=null;S.nights=0; updateFields(); renderPicker(); });
+  /* clear x buttons */
+  $('zr-ci-x').addEventListener('click',function(e){ e.stopPropagation(); S.ci=null;S.co=null;S.nights=0; updateFields(); renderPicker(); });
+  $('zr-co-x').addEventListener('click',function(e){ e.stopPropagation(); S.co=null;S.nights=0; updateFields(); renderPicker(); });
+  /* guests */
+  $('zr-gm').addEventListener('click',function(e){ e.stopPropagation(); S.guests=Math.max(1,S.guests-1); $('zr-gnum').textContent=S.guests; $('zr-gm').disabled=S.guests<=1; $('zr-g-val').textContent=S.guests+' '+gw(S.guests); var _g2=document.getElementById('zr-g-val2'); if(_g2)_g2.textContent=S.guests+' '+gw(S.guests); var rn=Math.ceil(S.guests/2); Object.keys(ROOMS).forEach(function(t){S.qty[t]=Math.min(rn,ROOMS[t].total);}); });
+  $('zr-gp').addEventListener('click',function(e){ e.stopPropagation(); S.guests=Math.min(6,S.guests+1); $('zr-gnum').textContent=S.guests; $('zr-gm').disabled=S.guests<=1; $('zr-g-val').textContent=S.guests+' '+gw(S.guests); var _g2=document.getElementById('zr-g-val2'); if(_g2)_g2.textContent=S.guests+' '+gw(S.guests); var rn=Math.ceil(S.guests/2); Object.keys(ROOMS).forEach(function(t){S.qty[t]=Math.min(rn,ROOMS[t].total);}); });
+  /* modal */
+  $('zm-close-btn').addEventListener('click',closeModal);
+  $('zr-overlay').addEventListener('click',closeModal);
+  /* rules toggle */
+  /* Назад к шагу 1 по клику на шаг "Номера/Rooms" в прогрессе */
+  $('zmps1').addEventListener('click',function(){
+    if(this.classList.contains('zm-ps-back')) goStep(1);
+  });
+  // «Данные» — возврат на шаг 2 с шага 2.5
+  $('zmps2').addEventListener('click',function(){
+    if(this.classList.contains('zm-ps-back')) goStep(2);
+  });
+
+  /* Адаптируем прогресс-бар под размер экрана */
+  function updateProgLabel(){
+    var ps3=document.getElementById('zmps3');
+    if(!ps3)return;
+    ps3.textContent=window.innerWidth<=768?(ps3.dataset.mob||'Подтверждение'):(ps3.dataset.desk||'Готово');
+  }
+  updateProgLabel();
+  window.addEventListener('resize',updateProgLabel);
+
+  /* Кнопка "Далее" на шаге 2 (мобиль) → шаг 2.5 */
+  var nextMob=document.getElementById('zm-next-mob');
+  if(nextMob) nextMob.addEventListener('click',function(){
+    // Валидируем поля
+    var name=$('zm-name').value.trim();
+    var phone=$('zm-phone').value.trim();
+    var email=$('zm-email').value.trim();
+    var err=$('zm-err'); err.style.display='none';
+    if(!name){err.textContent='Please enter your name';err.style.display='block';return;}
+    if(!phone){err.textContent='Please enter your phone';err.style.display='block';return;}
+    if(!email||email.indexOf('@')<0){err.textContent='Please enter a valid email';err.style.display='block';return;}
+    if(!$('zm-agree').checked){err.textContent='Please accept the house rules';err.style.display='block';return;}
+    if(!$('zm-agree-pd').checked){err.textContent='Please consent to personal data processing';err.style.display='block';return;}
+    // Копируем сводку в мобильный шаг подтверждения
+    var sumMob=document.getElementById('zm-sum-mob');
+    var sumDesk=document.getElementById('zm-sum');
+    if(sumMob&&sumDesk)sumMob.innerHTML=sumDesk.innerHTML;
+    goStep(2.5);
+  });
+
+  /* Кнопка "Назад" на шаге 2.5 */
+  var confirmBack=document.getElementById('zm-confirm-back');
+  if(confirmBack) confirmBack.addEventListener('click',function(){ goStep(2); });
+
+  /* Кнопка "Подтвердить" на шаге 2.5 (мобиль) */
+  var submitMob=document.getElementById('zm-submit-mob');
+  if(submitMob) submitMob.addEventListener('click',function(){
+    // Запускаем тот же doSubmit
+    doSubmit();
+  });
+  $('zm-rules-hdr').addEventListener('click',function(){ this.classList.toggle('zm-open'); $('zm-rules-body').classList.toggle('zm-open'); });
+  /* promo */
+  $('zm-promo').addEventListener('input',promoReset);
+  $('zm-papply').addEventListener('click',function(){
+    var code=$('zm-promo').value.trim().toUpperCase();
+    var m=$('zm-pmsg');
+    if(!code){m.textContent='Enter promo code';m.className='zm-pmsg zm-err';return;}
+    var qty=S.qty[S.selType]||1;
+    // Промокод применяется ТОЛЬКО к стоимости проживания, не к услугам
+    var total=(S.selPrice||0)*(S.nights||0)*qty;
+    if(isNaN(total)||total<0) total=0;
+    m.textContent='Checking...'; m.className='zm-pmsg';
+    var promoUrl=API+'?action=checkPromo&code='+encodeURIComponent(code)+'&total='+total;
+    console.log('[PROMO] URL:', promoUrl);
+    fetch(promoUrl)
+      .then(function(r){
+        console.log('[PROMO] HTTP status:', r.status);
+        return r.text(); // читаем как текст чтобы увидеть если придёт HTML вместо JSON
+      })
+      .then(function(text){
+        console.log('[PROMO] Raw response:', text);
+        var d;
+        try { d=JSON.parse(text); } catch(e){ m.className='zm-pmsg zm-err'; m.textContent='Non-JSON response: '+text.substring(0,100); return; }
+        console.log('[PROMO] Parsed:', d);
+        if(d.valid){ S.promo={on:true,code:d.code,disc:d.discount}; m.className='zm-pmsg zm-ok'; var discMsg=d.type==='%'?d.size+'% discount applied':rub(d.discount)+' discount applied'; m.innerHTML='✓ '+discMsg+' — total <strong>'+rub(d.newTotal)+'</strong>'; }
+        else{ S.promo={on:false,code:null,disc:0}; m.className='zm-pmsg zm-err'; m.textContent='✗ '+(d.error||JSON.stringify(d)); }
+        renderSum();
+      }).catch(function(e){ console.error('[PROMO] Fetch error:', e); m.className='zm-pmsg zm-err'; m.textContent='Network error: '+e.message; });
+  });
+  /* submit */
+  $('zm-submit').addEventListener('click',doSubmit);
+  /* close picker on outside click */
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('#zr-picker')&&!e.target.closest('#zr-fci')&&!e.target.closest('#zr-fco')&&!e.target.closest('#zr-ci-x')&&!e.target.closest('#zr-co-x')){ $('zr-picker').classList.remove('zr-open'); $('zr-fci').classList.remove('zr-active'); $('zr-fco').classList.remove('zr-active'); }
+    if(!e.target.closest('#zr-gpop')&&!e.target.closest('#zr-fg')) $('zr-gpop').classList.remove('zr-open');
+
+  });
+
+  /* Popup window listeners */
+  var pbClose=document.getElementById('zr-pb-close');
+  var pbPopup=document.getElementById('zr-popup');
+  if(pbClose)pbClose.addEventListener('click',zrClosePopup);
+  if(pbPopup)pbPopup.addEventListener('click',function(e){if(e.target===pbPopup)zrClosePopup();});
+  // Клик по полям дат — открывает календарь
+  var pbFci=document.getElementById('zr-pb-fci');
+  var pbFco=document.getElementById('zr-pb-fco');
+  function pbActivateField(active,inactive){
+    if(active)active.classList.add('zr-pb-active');
+    if(inactive)inactive.classList.remove('zr-pb-active');
+  }
+  if(pbFci)pbFci.addEventListener('click',function(){
+    pbActivateField(pbFci,pbFco);
+    zrPbOpenCal();
+  });
+  if(pbFco)pbFco.addEventListener('click',function(){
+    pbActivateField(pbFco,pbFci);
+    zrPbOpenCal();
+  });
+  var pbGm=document.getElementById('zr-pb-gm');
+  var pbGp=document.getElementById('zr-pb-gp');
+  var pbGnum=document.getElementById('zr-pb-gnum');
+  if(pbGm)pbGm.addEventListener('click',function(e){e.stopPropagation();PB.guests=Math.max(1,PB.guests-1);if(pbGnum)pbGnum.textContent=PB.guests;pbGm.disabled=PB.guests<=1;});
+  if(pbGp)pbGp.addEventListener('click',function(e){e.stopPropagation();PB.guests=Math.min(8,PB.guests+1);if(pbGnum)pbGnum.textContent=PB.guests;if(pbGm)pbGm.disabled=PB.guests<=1;});
+  var pbSearch=document.getElementById('zr-pb-search');
+  // Делегированный обработчик кликов по дням — один раз
+  var _calArea=document.getElementById('zr-pb-cal');
+  if(_calArea){
+    _calArea.addEventListener('click',function(e){
+      var el=e.target.closest('[data-pbday]');
+      if(el){ e.stopPropagation(); zrPbDay(el.dataset.pbday); }
+    });
+  }
+
+  if(pbSearch)pbSearch.addEventListener('click',function(){
+    if(!PB.ci||!PB.co){alert('Please select check-in and check-out dates');return;}
+    S.guests=PB.guests;
+    var _g=document.getElementById('zr-g-val');
+    var _g2=document.getElementById('zr-g-val2');
+    if(_g)_g.textContent=S.guests+' '+gw(S.guests);
+    if(_g2)_g2.textContent=S.guests+' '+gw(S.guests);
+    zrClosePopup();
+    loadRooms(PB.ci,PB.co);
+  });
+  /* Политика отмены — аккордеон */
+  var pBtn=document.getElementById('zm-policy-btn');
+  var pAcc=document.getElementById('zm-policy-acc');
+  if(pBtn&&pAcc){ pBtn.addEventListener('click',function(){ pAcc.classList.toggle('zm-open'); }); }
+  /* Занятость грузится при открытии пикера, не при старте страницы */
+}
+
+/* ══════════════════════════════════════════════════
+   POPUP — Полностью переписанный: 2 месяца, загрузчик, цены
+   ══════════════════════════════════════════════════ */
+var PB={
+  ci:null, co:null, guests:2,
+  calY:new Date().getFullYear(), calM:new Date().getMonth(),
+  occ:{}, occ2:{},   // данные за два месяца
+  occLoaded:false,
+  loading:false
+};
+
+function zrOpenSearch(){
+  var popup=document.getElementById('zr-popup');
+  if(!popup)return;
+  popup.classList.add('zr-open');
+  document.body.style.overflow='hidden';
+  // Только обновляем поля, НЕ открываем календарь сразу
+  zrPbUpdateFields();
+}
+
+function zrClosePopup(){
+  var popup=document.getElementById('zr-popup');
+  if(popup)popup.classList.remove('zr-open');
+  document.body.style.overflow='';
+  // Скрываем календарь
+  var cal=document.getElementById('zr-pb-cal');
+  if(cal)cal.classList.remove('zr-pb-cal-open');
+  // Снимаем активные поля
+  var fci=document.getElementById('zr-pb-fci');
+  var fco=document.getElementById('zr-pb-fco');
+  if(fci)fci.classList.remove('zr-pb-active');
+  if(fco)fco.classList.remove('zr-pb-active');
+}
+
+/* Загрузка занятости с весёлым лоадером */
+function zrPbLoadOcc(){
+  var cal=document.getElementById('zr-pb-cal');
+  if(!cal)return;
+  var msgs=getLoadingMessages();
+  var idx=0;
+  cal.innerHTML='<div class="zr-pb-loader">'
+    +'<div class="zr-pb-spinner"></div>'
+    +'<div class="zr-pb-load-msg" id="zr-pb-lmsg">'+msgs[0][0]+'</div>'
+    +'<div class="zr-pb-load-sub" id="zr-pb-lsub">'+msgs[0][1]+'</div>'
+    +'</div>';
+  var timer=setInterval(function(){
+    idx=(idx+1)%msgs.length;
+    var me=document.getElementById('zr-pb-lmsg');
+    var se=document.getElementById('zr-pb-lsub');
+    if(!me){clearInterval(timer);return;}
+    me.style.opacity='0'; se.style.opacity='0';
+    setTimeout(function(){
+      if(me){me.textContent=msgs[idx][0];me.style.opacity='1';}
+      if(se){se.textContent=msgs[idx][1];se.style.opacity='1';}
+    },200);
+  },1800);
+
+  var today=new Date();
+  var m1=PB.calM+1, y1=PB.calY;
+  var m2=(PB.calM+1)%12+1, y2=(PB.calM===11)?PB.calY+1:PB.calY;
+
+  Promise.all([
+    fetch(API+'?action=getOccupancy&month='+m1+'&year='+y1).then(function(r){return r.json();}).catch(function(){return {};}),
+    fetch(API+'?action=getOccupancy&month='+m2+'&year='+y2).then(function(r){return r.json();}).catch(function(){return {};})
+  ]).then(function(res){
+    clearInterval(timer);
+    PB.occ  = (res[0]&&res[0].success)?res[0].occupancy:{};
+    PB.occ2 = (res[1]&&res[1].success)?res[1].occupancy:{};
+    PB.occLoaded=true;
+    zrPbRender();
+  });
+}
+
+/* Обновить только поля без открытия календаря */
+function zrPbUpdateFields(){
+  var civ=document.getElementById('zr-pb-ci-val');
+  var cov=document.getElementById('zr-pb-co-val');
+  var nights_el=document.getElementById('zr-pb-nights');
+  if(civ){
+    civ.textContent=PB.ci?fd(PB.ci):"Select date";
+    civ.className='zr-pb-field-val'+(PB.ci?' zr-set':'');
+  }
+  if(cov){
+    cov.textContent=PB.co?fd(PB.co):"Select date";
+    cov.className='zr-pb-field-val'+(PB.co?' zr-set':'');
+  }
+  if(nights_el){
+    if(PB.ci&&PB.co){
+      var n=Math.round((pd(PB.co)-pd(PB.ci))/86400000);
+      nights_el.innerHTML='<strong>'+n+' '+nw(n)+'</strong>';
+    } else {
+      nights_el.textContent='Select dates';
+    }
+  }
+}
+
+/* Открыть календарь (при клике на поле даты) */
+function zrPbOpenCal(){
+  var area=document.getElementById('zr-pb-cal');
+  if(!area)return;
+  area.classList.add('zr-pb-cal-open');
+  // Подсвечиваем поле заезда
+  var fci=document.getElementById('zr-pb-fci');
+  var fco=document.getElementById('zr-pb-fco');
+  if(fci)fci.classList.add('zr-pb-active');
+  if(fco)fco.classList.remove('zr-pb-active');
+  if(!PB.occLoaded){
+    zrPbLoadOcc();
+  } else {
+    zrPbRenderDualCal();
+  }
+}
+
+/* Обновить поля И перерисовать открытый календарь */
+function zrPbRender(){
+  zrPbUpdateFields();
+  // Перерисовываем календарь только если он уже открыт
+  var area=document.getElementById('zr-pb-cal');
+  if(area&&area.classList.contains('zr-pb-cal-open')){
+    zrPbRenderDualCal();
+  }
+}
+
+/* Вычислить пороги цен для двух месяцев */
+function zrPbPriceThresholds(){
+  var all=[];
+  [PB.occ, PB.occ2].forEach(function(occData){
+    Object.keys(occData).forEach(function(d){
+      var o=occData[d]; if(o&&o.status!=='full'&&o.priceStd) all.push(o.priceStd);
+    });
+  });
+  if(!all.length)return null;
+  all.sort(function(a,b){return a-b;});
+  var n=all.length;
+  return {
+    min: all[0],
+    low:  all[Math.floor(n*0.33)],  // нижняя треть
+    high: all[Math.floor(n*0.67)],  // верхняя треть
+    max:  all[n-1]
+  };
+}
+
+/* Рендер одного месяца */
+function zrPbRenderMonth(year, month, occData, isFirst){
+  var thresholds=zrPbPriceThresholds();
+  var today=new Date(); today.setHours(0,0,0,0);
+  var ci=PB.ci?pd(PB.ci):null, co=PB.co?pd(PB.co):null;
+  var first=new Date(year,month,1).getDay();
+  var dim=new Date(year,month+1,0).getDate();
+  var off=first===0?6:first-1;
+
+  var isMobNow=(window.innerWidth<=768);
+  // На десктопе: стрелка назад у первого, вперёд у второго
+  // На мобиле: оба месяца — у единственного и назад и вперёд
+  var navLeft = (isFirst||isMobNow)
+    ? '<button class="zr-pb-cal-nav-btn" id="zr-pb-prev">&#8592;</button>'
+    : '<div class="zr-pb-cal-nav-empty"></div>';
+  var navRight = (!isFirst||isMobNow)
+    ? '<button class="zr-pb-cal-nav-btn" id="zr-pb-next">&#8594;</button>'
+    : '<div class="zr-pb-cal-nav-empty"></div>';
+
+  var html='<div class="zr-pb-cal-nav">'
+    +navLeft
+    +'<span class="zr-pb-cal-nav-title">'+MONTHS[month]+' '+year+'</span>'
+    +navRight
+    +'</div>';
+
+  var ths=DAYS.map(function(d){return'<th>'+d+'</th>';}).join('');
+  html+='<table class="zr-pb-cal-table"><thead><tr>'+ths+'</tr></thead><tbody>';
+  var cells=[];
+  for(var i=0;i<off;i++) cells.push('<td></td>');
+
+  for(var d=1;d<=dim;d++){
+    var date=new Date(year,month,d); date.setHours(0,0,0,0);
+    var dstr=ds(year,month,d);
+    var past=date<today;
+    var occ=occData[d]||{status:'free'};
+    var full=(occ.status==='full');
+    var isS=ci&&date.getTime()===ci.getTime();
+    var isE=co&&date.getTime()===co.getTime();
+    var isIn=ci&&co&&date>ci&&date<co;
+    var isShort=!!(PB.ci&&!PB.co&&Math.round((date-pd(PB.ci))/86400000)>0&&Math.round((date-pd(PB.ci))/86400000)<2);
+
+    var cls='zr-pb-day';
+    if(past) cls+=' zr-pb-past';
+    else if(full) cls+=' zr-pb-full';
+    else if(isShort) cls+=' zr-pb-short';
+    else if(isS&&isE) cls+=' zr-pb-sel-s zr-pb-sel-e';
+    else if(isS) cls+=' zr-pb-sel-s';
+    else if(isE) cls+=' zr-pb-sel-e';
+    else if(isIn) cls+=' zr-pb-range';
+
+    var price=occ.priceStd||0;
+    var priceHtml='';
+    var priceCls='';
+    var lastBadge='';
+    var isBest=false;
+    if(!past&&!full&&price&&thresholds){
+      // Цветовое кодирование
+      if(price<=thresholds.low){ priceCls=' zr-pb-price-low'; }
+      else if(price>=thresholds.high){ priceCls=' zr-pb-price-high'; }
+      else { priceCls=' zr-pb-price-mid'; }
+      // «Лучшая цена» — минимальная цена в диапазоне
+      if(price===thresholds.min){ priceCls=' zr-pb-price-low'; isBest=true; cls+=' zr-pb-best'; }
+      // «Мало мест» — если в оcc есть available и он равен 1
+      if(occ.available===1){
+        lastBadge='<span class="zr-pb-last-badge">'+(LANG==='ru'?'1 ост.':'1 left')+'</span>';
+      }
+      priceHtml='<span class="zr-pb-dp'+priceCls.trim().replace('zr-pb-price-','zr-pb-dp-').replace(' ','')+'">'+price.toLocaleString('ru-RU')+'</span>'+lastBadge;
+    }
+    var data=(!past&&!full&&!isShort)?' data-pbday="'+dstr+'"':'';
+
+    cells.push('<td><div class="'+cls+'"'+data+' role="button" tabindex="0">'
+      +'<span class="zr-pb-dn">'+d+'</span>'
+      +priceHtml
+      +'</div></td>');
+  }
+
+  var rows='';
+  for(var i=0;i<cells.length;i+=7){
+    var w=cells.slice(i,i+7);
+    while(w.length<7)w.push('<td></td>');
+    rows+='<tr>'+w.join('')+'</tr>';
+  }
+  html+=''+rows+'</tbody></table>';
+  return html;
+}
+
+/* Двойной календарь */
+function zrPbRenderDualCal(){
+  var cal=document.getElementById('zr-pb-cal');
+  if(!cal)return;
+
+  var m1=PB.calM, y1=PB.calY;
+  var m2=(PB.calM+1)%12, y2=(PB.calM===11)?PB.calY+1:PB.calY;
+
+  var mob=window.innerWidth<=768;
+
+  var html='<div class="zr-pb-cals">';
+  html+='<div class="zr-pb-month">'+zrPbRenderMonth(y1,m1,PB.occ,true)+'</div>';
+  if(!mob) html+='<div class="zr-pb-month">'+zrPbRenderMonth(y2,m2,PB.occ2,false)+'</div>';
+  html+='</div>';
+
+  cal.innerHTML=html;
+
+  // Навигация
+  var prev=document.getElementById('zr-pb-prev');
+  var next=document.getElementById('zr-pb-next');
+  if(prev) prev.addEventListener('click',function(){
+    PB.calM--; if(PB.calM<0){PB.calM=11;PB.calY--;}
+    PB.occLoaded=false; zrPbLoadOcc();
+  });
+  if(next) next.addEventListener('click',function(){
+    PB.calM++; if(PB.calM>11){PB.calM=0;PB.calY++;}
+    PB.occLoaded=false; zrPbLoadOcc();
+  });
+
+  // Обработчик кликов устанавливается один раз в init()
+}
+
+function zrPbDay(dstr){
+  if(!PB.ci||PB.co){ PB.ci=dstr; PB.co=null; }
+  else if(dstr===PB.ci){ PB.ci=null; PB.co=null; }
+  else if(dstr<PB.ci){ PB.ci=dstr; PB.co=null; }
+  else {
+    var n=Math.round((pd(dstr)-pd(PB.ci))/86400000);
+    if(n<2)return;
+    PB.co=dstr;
+  }
+  zrPbRender();
+}
+
+/* ══════════════════════════════════════════════════
+   ТАЙМЕР СРОЧНОСТИ — 15 минут
+   ══════════════════════════════════════════════════ */
+var _timerInterval=null;
+var _timerSec=0;
+var TIMER_DURATION=15*60; // 15 минут
+
+function startTimer(){
+  stopTimer(); // сбрасываем предыдущий
+  _timerSec=TIMER_DURATION;
+  var bar=document.getElementById('zm-timer-bar');
+  if(bar)bar.classList.add('zm-timer-on');
+  _timerInterval=setInterval(function(){
+    _timerSec--;
+    updateTimerDisplay();
+    if(_timerSec<=0){
+      stopTimer();
+      onTimerExpired();
+    }
+  },1000);
+  updateTimerDisplay();
+}
+
+function stopTimer(){
+  if(_timerInterval){clearInterval(_timerInterval);_timerInterval=null;}
+  var bar=document.getElementById('zm-timer-bar');
+  if(bar)bar.classList.remove('zm-timer-on');
+}
+
+function updateTimerDisplay(){
+  var mm=Math.floor(_timerSec/60);
+  var ss=_timerSec%60;
+  var str=(mm<10?'0':'')+mm+':'+(ss<10?'0':'')+ss;
+  var el=document.getElementById('zm-timer-mm');
+  if(el)el.textContent=str;
+  // Последние 3 минуты — красный pulse
+  var disp=document.getElementById('zm-timer-display');
+  if(disp){
+    if(_timerSec<=180)disp.classList.add('zm-timer-urgent');
+    else disp.classList.remove('zm-timer-urgent');
+  }
+}
+
+function onTimerExpired(){
+  // Мягко: показываем сообщение, перезапускаем на 5 мин
+  var el=document.getElementById('zm-timer-mm');
+  if(el)el.textContent='00:00';
+  // Через 2 сек — перезапуск с коротким таймером (не закрываем)
+  setTimeout(function(){
+    _timerSec=5*60;
+    var bar=document.getElementById('zm-timer-bar');
+    if(bar)bar.classList.add('zm-timer-on');
+    _timerInterval=setInterval(function(){
+      _timerSec--;
+      updateTimerDisplay();
+      if(_timerSec<=0){stopTimer();}
+    },1000);
+    updateTimerDisplay();
+  },2000);
+}
+
+/* ── ГЛОБАЛЬНЫЙ ДОСТУП к popup-функциям ── */
+window.zrOpenSearch  = zrOpenSearch;
+window.zrClosePopup  = zrClosePopup;
+window.zrPbDay       = zrPbDay;
+
+/* ── START ── */
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',init);
+} else {
+  init();
+}
+
+})();
+</script>
